@@ -5,6 +5,7 @@ import { provideWalletAdapter } from '@heavy-duty/wallet-adapter';
 import {
   HdConnectWalletDirective,
   HdDisconnectWalletDirective,
+  HdObscureAddressPipe,
   HdSelectWalletDirective,
   HdWalletAdapterDirective,
 } from '@heavy-duty/wallet-adapter/cdk';
@@ -38,7 +39,9 @@ import {
             {{ wallet !== null ? wallet.adapter.name : 'None' }}
           </p>
 
-          <p *ngIf="publicKey">Public Key: {{ publicKey.toBase58() }}</p>
+          <p *ngIf="publicKey">
+            Public Key: {{ publicKey.toBase58() | hdObscureAddress }}
+          </p>
 
           <p>Status: {{ connected ? 'connected' : 'disconnected' }}</p>
         </div>
@@ -110,6 +113,7 @@ import {
     HdDisconnectWalletDirective,
     HdSelectWalletDirective,
     HdWalletAdapterDirective,
+    HdObscureAddressPipe,
   ],
   providers: [
     provideWalletAdapter({
