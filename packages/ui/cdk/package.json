@@ -1,5 +1,5 @@
 {
-  "name": "@wallet-adapter/ui/cdk",
+  "name": "@heavy-duty/wallet-adapter-cdk",
   "version": "0.0.1",
   "peerDependencies": {
     "@angular/common": "^15.1.0",
