@@ -16,6 +16,10 @@ The minor version will be incremented upon a breaking change and the patch versi
 - data-access: create `provideWalletAdapter` for standalone.
 - docs: add README to the repository.
 - raw-example: create a raw example app and added instructions on how to get there in the README.
+- cdk: use `inject` instead of the `constructor` for DI.
+- cdk: add `HdConnectWalletDirective` to give HTML elements the ability to connect the selected wallet.
+- cdk: add `HdDisconnectWalletDirective` to give HTML elements the ability to disconnect the selected wallet.
+- cdk: add `HdSelectWalletDirective` to give HTML elements the ability to select a wallet.
 
 ## [0.5.1] - 2023-01-15
 
