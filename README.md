@@ -4,8 +4,8 @@ The official Angular library for integrating wallets from the Solana ecosystem.
 
 @heavy-duty/wallet-adapter smooths over the rough edges an Angular developer might encounter when implementing the framework-agnostic @solana/wallet-adapter & aims to provide a more natural developer experience by conforming to Angular conventions.
 
-Dependency injection - Provide and Inject Wallet services in your components
-Observable based - Utilize RxJS rather than callbacks for realtime streams
+- **Dependency injection** - Provide and Inject Wallet services in your components
+- **Observable based** - Utilize RxJS rather than callbacks for realtime streams
 
 ## Example use
 
