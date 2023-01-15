@@ -14,7 +14,7 @@ import {
   template: `
     <main>
       <header>
-        <h1>Wallet Adapter Example (CDK)</h1>
+        <h1>Wallet Adapter Example (Raw)</h1>
       </header>
 
       <section>
@@ -25,6 +25,10 @@ import {
               {{ wallet.adapter.name }}
             </ng-container>
             <ng-template #noneWallet> None </ng-template>
+          </p>
+
+          <p *ngIf="publicKey$ | async as publicKey">
+            Public Key: {{ publicKey.toBase58() }}
           </p>
 
           <p>
@@ -60,7 +64,10 @@ import {
           </div>
         </fieldset>
 
-        <button (click)="onConnect()" [disabled]="connected$ | async">
+        <button
+          (click)="onConnect()"
+          [disabled]="(connected$ | async) || (wallet$ | async) === null"
+        >
           Connect
         </button>
         <button
@@ -107,12 +114,6 @@ export class AppComponent implements OnInit {
   }
 
   onConnect() {
-    const walletName = this.selectWalletControl.getRawValue();
-
-    if (walletName === null) {
-      throw new Error('Select a wallet first.');
-    }
-
     this._walletStore.connect().subscribe();
   }
 
