@@ -114,10 +114,20 @@ export class AppComponent implements OnInit {
   }
 
   onConnect() {
-    this._walletStore.connect().subscribe();
+    console.log('Starting to connect wallet');
+
+    this._walletStore.connect().subscribe({
+      next: () => console.log('Wallet connected'),
+      error: (error) => console.error(error),
+    });
   }
 
   onDisconnect() {
-    this._walletStore.disconnect().subscribe();
+    console.log('Starting to disconnect wallet');
+
+    this._walletStore.disconnect().subscribe({
+      next: () => console.log('Wallet disconnected'),
+      error: (error) => console.error(error),
+    });
   }
 }
