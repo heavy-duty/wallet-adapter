@@ -17,8 +17,8 @@
     "baseUrl": ".",
     "paths": {
       "@heavy-duty/wallet-adapter": ["packages/data-access/src/index.ts"],
-      "@heavy-duty/wallet-adapter/cdk": ["packages/ui/cdk/src/index.ts"],
-      "@heavy-duty/wallet-adapter/material": [
+      "@heavy-duty/wallet-adapter-cdk": ["packages/ui/cdk/src/index.ts"],
+      "@heavy-duty/wallet-adapter-material": [
         "packages/ui/material/src/index.ts"
       ]
     }

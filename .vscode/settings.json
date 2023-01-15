@@ -1,5 +1,10 @@
 {
-  "conventionalCommits.scopes": ["cdk", "raw-example", "cdk-example"],
+  "conventionalCommits.scopes": [
+    "cdk",
+    "raw-example",
+    "cdk-example",
+    "material"
+  ],
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {

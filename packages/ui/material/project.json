@@ -1,5 +1,5 @@
 {
-  "name": "ui-material",
+  "name": "@heavy-duty/wallet-adapter-material",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "projectType": "library",
   "sourceRoot": "packages/ui/material/src",
