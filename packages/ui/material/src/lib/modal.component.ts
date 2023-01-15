@@ -1,13 +1,83 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Directive,
+  EventEmitter,
+  inject,
+  Input,
+  Output,
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { Wallet } from '@heavy-duty/wallet-adapter';
 import { HdWalletListItemComponent } from '@heavy-duty/wallet-adapter-cdk';
+import { ComponentStore } from '@ngrx/component-store';
 import { WalletName, WalletReadyState } from '@solana/wallet-adapter-base';
+import { exhaustMap, tap } from 'rxjs';
+
+interface ViewModel {
+  isOpen: boolean;
+}
+
+const initialState: ViewModel = {
+  isOpen: false,
+};
+
+@Directive({
+  selector: '[hdWalletModalTrigger]',
+  standalone: true,
+  exportAs: 'hdWalletModalTrigger',
+})
+export class HdWalletModalTriggerDirective extends ComponentStore<ViewModel> {
+  private readonly _matDialog = inject(MatDialog);
+
+  @Input() panelClass = '';
+  @Output() selectWallet = new EventEmitter<WalletName>();
+
+  private readonly _handleOpen = this.effect<Wallet[]>(
+    exhaustMap((wallets) => {
+      this.patchState({ isOpen: true });
+
+      return this._matDialog
+        .open<HdWalletModalComponent, { wallets: Wallet[] }, WalletName>(
+          HdWalletModalComponent,
+          {
+            panelClass: ['wallet-modal', ...this.panelClass.split(' ')],
+            maxWidth: '380px',
+            maxHeight: '90vh',
+            data: {
+              wallets,
+            },
+          }
+        )
+        .afterClosed()
+        .pipe(
+          tap((walletName) => {
+            if (walletName) {
+              this.selectWallet.emit(walletName);
+            }
+            this.patchState({ isOpen: false });
+          })
+        );
+    })
+  );
+
+  constructor() {
+    super(initialState);
+  }
+
+  open(wallets: Wallet[]) {
+    this._handleOpen(wallets);
+  }
+}
 
 @Component({
   selector: 'hd-wallet-modal',

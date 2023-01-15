@@ -1,5 +1,5 @@
 {
-  "name": "@wallet-adapter/ui/material",
+  "name": "@heavy-duty/wallet-adapter-material",
   "version": "0.0.1",
   "peerDependencies": {
     "@angular/common": "^15.1.0",

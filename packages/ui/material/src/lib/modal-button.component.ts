@@ -12,8 +12,10 @@ import {
   HdWalletAdapterDirective,
   HdWalletIconComponent,
 } from '@heavy-duty/wallet-adapter-cdk';
-import { HdWalletModalButtonDirective } from './modal-button.directive';
-import { HdWalletModalComponent } from './modal.component';
+import {
+  HdWalletModalComponent,
+  HdWalletModalTriggerDirective,
+} from './modal.component';
 import { ButtonColor } from './types';
 
 @Component({
@@ -23,8 +25,9 @@ import { ButtonColor } from './types';
       *hdWalletAdapter="let wallets = wallets; let selectWallet = selectWallet"
       mat-raised-button
       [color]="color"
-      hdWalletModalButton
-      [wallets]="wallets"
+      hdWalletModalTrigger
+      #hdWalletModalTrigger="hdWalletModalTrigger"
+      (click)="hdWalletModalTrigger.open(wallets)"
       (selectWallet)="selectWallet($event)"
     >
       <ng-content></ng-content>
@@ -50,7 +53,7 @@ import { ButtonColor } from './types';
     CommonModule,
     HdWalletAdapterDirective,
     HdWalletIconComponent,
-    HdWalletModalButtonDirective,
+    HdWalletModalTriggerDirective,
     HdWalletModalComponent,
     MatButtonModule,
     MatDialogModule,

@@ -13,15 +13,17 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import {
+  HdDisconnectWalletDirective,
   HdObscureAddressPipe,
   HdWalletAdapterDirective,
-  HdWalletDisconnectButtonDirective,
   HdWalletIconComponent,
 } from '@heavy-duty/wallet-adapter-cdk';
 import { HdWalletConnectButtonComponent } from './connect-button.component';
 import { HdWalletModalButtonComponent } from './modal-button.component';
-import { HdWalletModalButtonDirective } from './modal-button.directive';
-import { HdWalletModalComponent } from './modal.component';
+import {
+  HdWalletModalComponent,
+  HdWalletModalTriggerDirective,
+} from './modal.component';
 import { ButtonColor } from './types';
 
 @Component({
@@ -68,16 +70,22 @@ import { ButtonColor } from './types';
           </button>
           <button
             mat-menu-item
-            hdWalletModalButton
+            #walletModalTrigger="hdWalletModalTrigger"
+            hdWalletModalTrigger
             panelClass="mat-dialog"
-            [wallets]="wallets"
+            (click)="walletModalTrigger.open(wallets)"
             (selectWallet)="selectWallet($event)"
           >
             <mat-icon>sync_alt</mat-icon>
             Connect a different wallet
           </button>
           <mat-divider></mat-divider>
-          <button mat-menu-item hdWalletDisconnectButton>
+          <button
+            mat-menu-item
+            #disconnectWallet="hdDisconnectWallet"
+            hdDisconnectWallet
+            (click)="disconnectWallet.run()"
+          >
             <mat-icon>logout</mat-icon>
             Disconnect
           </button>
@@ -106,8 +114,8 @@ import { ButtonColor } from './types';
     CdkMenuModule,
     HdWalletAdapterDirective,
     HdWalletIconComponent,
-    HdWalletModalButtonDirective,
-    HdWalletDisconnectButtonDirective,
+    HdWalletModalTriggerDirective,
+    HdDisconnectWalletDirective,
     HdObscureAddressPipe,
     HdWalletModalComponent,
     HdWalletModalButtonComponent,
