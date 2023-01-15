@@ -3,7 +3,8 @@
     "cdk",
     "raw-example",
     "cdk-example",
-    "material"
+    "material",
+    "core"
   ],
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
