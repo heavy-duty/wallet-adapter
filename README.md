@@ -67,7 +67,7 @@ export class AppComponent {
 
 ## Compatibility
 
-### Angular and Firebase versions
+### Angular and @solana/wallet-adapter versions
 
 @heavy-duty/wallet-adapter doesn't follow Angular's versioning as @solana/wallet-adapter also has breaking changes throughout the year. Instead we try to maintain compatibility with both @solana/wallet-adapter and Angular majors for as long as possible, only breaking when we need to support a new major of one or the other.
 
