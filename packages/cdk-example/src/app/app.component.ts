@@ -1,7 +1,13 @@
-import { AsyncPipe, NgFor, NgIf } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { provideWalletAdapter, WalletStore } from '@heavy-duty/wallet-adapter';
+import { NgFor, NgIf } from '@angular/common';
+import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { provideWalletAdapter } from '@heavy-duty/wallet-adapter';
+import {
+  HdConnectWalletDirective,
+  HdDisconnectWalletDirective,
+  HdSelectWalletDirective,
+  HdWalletAdapterDirective,
+} from '@heavy-duty/wallet-adapter/cdk';
 import { WalletName } from '@solana/wallet-adapter-base';
 import {
   PhantomWalletAdapter,
@@ -12,31 +18,36 @@ import {
   standalone: true,
   selector: 'hd-root',
   template: `
-    <main>
+    <main
+      *hdWalletAdapter="
+        let wallet = wallet;
+        let connecting = connecting;
+        let connected = connected;
+        let publicKey = publicKey;
+        let wallets = wallets
+      "
+    >
       <header>
-        <h1>Wallet Adapter Example (Raw)</h1>
+        <h1>Wallet Adapter Example (CDK)</h1>
       </header>
 
       <section>
         <div>
           <p>
             Wallet:
-            <ng-container *ngIf="wallet$ | async as wallet; else noneWallet">
-              {{ wallet.adapter.name }}
-            </ng-container>
-            <ng-template #noneWallet> None </ng-template>
+            {{ wallet !== null ? wallet.adapter.name : 'None' }}
           </p>
 
-          <p *ngIf="publicKey$ | async as publicKey">
-            Public Key: {{ publicKey.toBase58() }}
-          </p>
+          <p *ngIf="publicKey">Public Key: {{ publicKey.toBase58() }}</p>
 
-          <p>
-            Status: {{ (connected$ | async) ? 'connected' : 'disconnected' }}
-          </p>
+          <p>Status: {{ connected ? 'connected' : 'disconnected' }}</p>
         </div>
 
-        <fieldset>
+        <fieldset
+          hdSelectWallet
+          #selectWallet="hdSelectWallet"
+          (walletSelected)="onWalletSelected($event)"
+        >
           <legend>Select a wallet:</legend>
 
           <div>
@@ -44,19 +55,21 @@ import {
               type="radio"
               id="select-wallet-empty"
               name="walletName"
-              [formControl]="selectWalletControl"
               [value]="null"
+              [ngModel]="wallet?.adapter?.name ?? null"
+              (ngModelChange)="selectWallet.run(null)"
             />
-            <label for="select-wallet-empty">None</label>
+            <label for="select-wallet-empty"> None </label>
           </div>
 
-          <div *ngFor="let wallet of wallets$ | async; let i = index">
+          <div *ngFor="let wallet of wallets; let i = index">
             <input
               type="radio"
               [id]="'select-wallet-' + i"
               name="walletName"
-              [formControl]="selectWalletControl"
               [value]="wallet.adapter.name"
+              [ngModel]="wallet?.adapter?.name ?? null"
+              (ngModelChange)="selectWallet.run(wallet.adapter.name)"
             />
             <label [for]="'select-wallet-' + i">
               {{ wallet.adapter.name }}
@@ -65,21 +78,39 @@ import {
         </fieldset>
 
         <button
-          (click)="onConnect()"
-          [disabled]="(connected$ | async) || (wallet$ | async) === null"
+          (click)="connectWallet.run()"
+          [disabled]="connected || wallet === null"
+          hdConnectWallet
+          #connectWallet="hdConnectWallet"
+          (connectWalletStarts)="onConnectWalletStarts()"
+          (connectWalletError)="onConnectWalletError($event)"
+          (walletConnected)="onWalletConnected()"
         >
           Connect
         </button>
         <button
-          (click)="onDisconnect()"
-          [disabled]="(connected$ | async) === false"
+          (click)="disconnectWallet.run()"
+          [disabled]="!connected"
+          hdDisconnectWallet
+          #disconnectWallet="hdDisconnectWallet"
+          (disconnectWalletStarts)="onDisconnectWalletStarts()"
+          (disconnectWalletError)="onDisconnectWalletError($event)"
+          (walletDisconnected)="onWalletDisconnected()"
         >
           Disconnect
         </button>
       </section>
     </main>
   `,
-  imports: [NgIf, NgFor, AsyncPipe, ReactiveFormsModule],
+  imports: [
+    NgIf,
+    NgFor,
+    FormsModule,
+    HdConnectWalletDirective,
+    HdDisconnectWalletDirective,
+    HdSelectWalletDirective,
+    HdWalletAdapterDirective,
+  ],
   providers: [
     provideWalletAdapter({
       autoConnect: false,
@@ -87,37 +118,32 @@ import {
     }),
   ],
 })
-export class AppComponent implements OnInit {
-  private readonly _walletStore = inject(WalletStore);
-  private readonly _formBuilder = inject(FormBuilder);
-
-  readonly selectWalletControl = this._formBuilder.control<WalletName | null>(
-    null,
-    [Validators.required]
-  );
-
-  readonly connected$ = this._walletStore.connected$;
-  readonly publicKey$ = this._walletStore.publicKey$;
-  readonly wallets$ = this._walletStore.wallets$;
-  readonly wallet$ = this._walletStore.wallet$;
-
-  ngOnInit() {
-    this._walletStore.wallet$.subscribe((wallet) =>
-      this.selectWalletControl.setValue(wallet?.adapter.name ?? null, {
-        emitEvent: false,
-      })
-    );
-
-    this.selectWalletControl.valueChanges.subscribe((wallet) => {
-      this._walletStore.selectWallet(wallet);
-    });
+export class AppComponent {
+  onWalletConnected() {
+    console.log('Wallet connected');
   }
 
-  onConnect() {
-    this._walletStore.connect().subscribe();
+  onConnectWalletStarts() {
+    console.log('Starting to connect wallet');
   }
 
-  onDisconnect() {
-    this._walletStore.disconnect().subscribe();
+  onConnectWalletError(error: unknown) {
+    console.error(error);
+  }
+
+  onWalletDisconnected() {
+    console.log('Wallet disconnected');
+  }
+
+  onDisconnectWalletStarts() {
+    console.log('Starting to disconnect wallet');
+  }
+
+  onDisconnectWalletError(error: unknown) {
+    console.error(error);
+  }
+
+  onWalletSelected(walletName: WalletName | null) {
+    console.log(`Wallet selected: ${walletName}`);
   }
 }
