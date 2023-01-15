@@ -108,8 +108,9 @@ export class AppComponent implements OnInit {
       })
     );
 
-    this.selectWalletControl.valueChanges.subscribe((wallet) => {
-      this._walletStore.selectWallet(wallet);
+    this.selectWalletControl.valueChanges.subscribe((walletName) => {
+      this._walletStore.selectWallet(walletName);
+      console.log(`Wallet selected: ${walletName}`);
     });
   }
 
