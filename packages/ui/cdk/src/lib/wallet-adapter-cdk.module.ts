@@ -4,6 +4,7 @@ import { HdConnectWalletDirective } from './connect-wallet.directive';
 import { HdWalletDisconnectButtonDirective } from './disconnect-button.directive';
 import { HdDisconnectWalletDirective } from './disconnect-wallet.directive';
 import { HdWalletListItemComponent } from './list-item.component';
+import { HdWalletModalButtonDirective } from './modal-button.directive';
 import { HdObscureAddressPipe } from './obscure-address.pipe';
 import { HdSelectWalletDirective } from './select-wallet.directive';
 import { HdWalletAdapterDirective } from './wallet-adapter.directive';
@@ -20,6 +21,7 @@ import { HdWalletIconComponent } from './wallet-icon.component';
     HdSelectWalletDirective,
     HdConnectWalletDirective,
     HdDisconnectWalletDirective,
+    HdWalletModalButtonDirective,
   ],
   exports: [
     HdWalletConnectButtonDirective,
@@ -31,6 +33,7 @@ import { HdWalletIconComponent } from './wallet-icon.component';
     HdSelectWalletDirective,
     HdConnectWalletDirective,
     HdDisconnectWalletDirective,
+    HdWalletModalButtonDirective,
   ],
 })
 export class HdWalletAdapterCdkModule {}
