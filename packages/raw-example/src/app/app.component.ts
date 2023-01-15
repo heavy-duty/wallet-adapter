@@ -27,6 +27,10 @@ import {
             <ng-template #noneWallet> None </ng-template>
           </p>
 
+          <p *ngIf="publicKey$ | async as publicKey">
+            Public Key: {{ publicKey.toBase58() }}
+          </p>
+
           <p>
             Status: {{ (connected$ | async) ? 'connected' : 'disconnected' }}
           </p>
@@ -60,7 +64,10 @@ import {
           </div>
         </fieldset>
 
-        <button (click)="onConnect()" [disabled]="connected$ | async">
+        <button
+          (click)="onConnect()"
+          [disabled]="(connected$ | async) || (wallet$ | async) === null"
+        >
           Connect
         </button>
         <button
@@ -73,7 +80,12 @@ import {
     </main>
   `,
   imports: [NgIf, NgFor, AsyncPipe, ReactiveFormsModule],
-  providers: [provideWalletAdapter({ autoConnect: false })],
+  providers: [
+    provideWalletAdapter({
+      autoConnect: false,
+      adapters: [new PhantomWalletAdapter(), new SolflareWalletAdapter()],
+    }),
+  ],
 })
 export class AppComponent implements OnInit {
   private readonly _walletStore = inject(WalletStore);
@@ -90,11 +102,6 @@ export class AppComponent implements OnInit {
   readonly wallet$ = this._walletStore.wallet$;
 
   ngOnInit() {
-    this._walletStore.setAdapters([
-      new PhantomWalletAdapter(),
-      new SolflareWalletAdapter(),
-    ]);
-
     this._walletStore.wallet$.subscribe((wallet) =>
       this.selectWalletControl.setValue(wallet?.adapter.name ?? null, {
         emitEvent: false,
@@ -107,12 +114,6 @@ export class AppComponent implements OnInit {
   }
 
   onConnect() {
-    const walletName = this.selectWalletControl.getRawValue();
-
-    if (walletName === null) {
-      throw new Error('Select a wallet first.');
-    }
-
     this._walletStore.connect().subscribe();
   }
 
