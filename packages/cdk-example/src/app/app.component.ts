@@ -22,7 +22,6 @@ import {
     <main
       *hdWalletAdapter="
         let wallet = wallet;
-        let connecting = connecting;
         let connected = connected;
         let publicKey = publicKey;
         let wallets = wallets
