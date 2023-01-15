@@ -1,0 +1,27 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2015",
+    "module": "esnext",
+    "lib": ["es2017", "ES2020.Intl", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "paths": {
+      "@heavy-duty/wallet-adapter": ["packages/data-access/src/index.ts"],
+      "@heavy-duty/wallet-adapter/cdk": ["packages/ui/cdk/src/index.ts"],
+      "@heavy-duty/wallet-adapter/material": [
+        "packages/ui/material/src/index.ts"
+      ]
+    }
+  },
+  "exclude": ["node_modules", "tmp"]
+}
