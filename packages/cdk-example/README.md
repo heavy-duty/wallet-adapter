@@ -164,25 +164,22 @@ For Angular applications using modules:
 For Angular applications using standalone:
 
 ```ts
-import { Component } from '@angular/core';
+import { bootstrapApplication } from '@angular/platform-browser';
 import { provideWalletAdapter } from '@heavy-duty/wallet-adapter';
 import {
   PhantomWalletAdapter,
   SolflareWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
+import { AppComponent } from './app/app.component';
 
-@Component({
-  standalone: true,
-  selector: 'hd-root',
-  // template: `your template`,
+bootstrapApplication(AppComponent, {
   providers: [
     provideWalletAdapter({
       autoConnect: false,
       adapters: [new PhantomWalletAdapter(), new SolflareWalletAdapter()],
     }),
   ],
-})
-export class AppComponent {}
+}).catch((err) => console.error(err));
 ```
 
 ### Integrate wallet logic
