@@ -1,7 +1,6 @@
 import { NgFor, NgIf } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { provideWalletAdapter } from '@heavy-duty/wallet-adapter';
 import {
   HdConnectWalletDirective,
   HdDisconnectWalletDirective,
@@ -10,10 +9,6 @@ import {
   HdWalletAdapterDirective,
 } from '@heavy-duty/wallet-adapter-cdk';
 import { WalletName } from '@solana/wallet-adapter-base';
-import {
-  PhantomWalletAdapter,
-  SolflareWalletAdapter,
-} from '@solana/wallet-adapter-wallets';
 
 @Component({
   standalone: true,
@@ -113,12 +108,6 @@ import {
     HdSelectWalletDirective,
     HdWalletAdapterDirective,
     HdObscureAddressPipe,
-  ],
-  providers: [
-    provideWalletAdapter({
-      autoConnect: false,
-      adapters: [new PhantomWalletAdapter(), new SolflareWalletAdapter()],
-    }),
   ],
 })
 export class AppComponent {
