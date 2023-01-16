@@ -1,4 +1,4 @@
-import { NgClass, NgIf } from '@angular/common';
+import { NgClass, NgFor, NgIf } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -252,6 +252,7 @@ export class HdWalletModalTriggerDirective extends ComponentStore<ViewModel> {
   standalone: true,
   imports: [
     NgIf,
+    NgFor,
     NgClass,
     MatButtonModule,
     MatIconModule,
