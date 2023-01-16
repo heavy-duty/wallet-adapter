@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { NgClass, NgIf } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -85,9 +85,9 @@ export class HdWalletModalTriggerDirective extends ComponentStore<ViewModel> {
     <ng-container *ngIf="installedWallets.length > 0">
       <header>
         <button
+          (click)="onClose()"
           mat-icon-button
           aria-label="Close wallet adapter selection"
-          (click)="onClose()"
         >
           <mat-icon>close</mat-icon>
         </button>
@@ -148,10 +148,10 @@ export class HdWalletModalTriggerDirective extends ComponentStore<ViewModel> {
       </header>
 
       <button
+        class="getting-started"
         (click)="onGettingStarted()"
         color="primary"
         mat-flat-button
-        class="getting-started"
       >
         Get started
       </button>
@@ -251,12 +251,13 @@ export class HdWalletModalTriggerDirective extends ComponentStore<ViewModel> {
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
-    CommonModule,
-    HdWalletListItemComponent,
+    NgIf,
+    NgClass,
     MatButtonModule,
     MatIconModule,
     MatListModule,
     MatExpansionModule,
+    HdWalletListItemComponent,
   ],
 })
 export class HdWalletModalComponent {

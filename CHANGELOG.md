@@ -29,6 +29,7 @@ The minor version will be incremented upon a breaking change and the patch versi
 - cdk: remove `HdWalletDisconnectButtonDirective`.
 - cdk: remove `HdWalletModalButtonDirective`.
 - material: remove `HdWalletModalTriggerDirective`.
+- cdk: remove `selectWallet` from `HdWalletAdapterDirective`
 
 ## [0.5.1] - 2023-01-15
 

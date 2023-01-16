@@ -15,6 +15,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import {
   HdDisconnectWalletDirective,
   HdObscureAddressPipe,
+  HdSelectWalletDirective,
   HdWalletAdapterDirective,
   HdWalletIconComponent,
 } from '@heavy-duty/wallet-adapter-cdk';
@@ -34,8 +35,7 @@ import { ButtonColor } from './types';
         let wallet = wallet;
         let wallets = wallets;
         let publicKey = publicKey;
-        let connected = connected;
-        let selectWallet = selectWallet
+        let connected = connected
       "
     >
       <hd-wallet-modal-button
@@ -49,12 +49,12 @@ import { ButtonColor } from './types';
 
       <ng-container *ngIf="connected">
         <button
-          mat-raised-button
           [color]="color"
           [matMenuTriggerFor]="walletMenu"
+          mat-raised-button
         >
           <ng-content></ng-content>
-          <div class="button-content" *ngIf="!children">
+          <div *ngIf="!children" class="button-content">
             <hd-wallet-icon *ngIf="wallet" [wallet]="wallet"></hd-wallet-icon>
             {{ publicKey?.toBase58() | hdObscureAddress }}
           </div>
@@ -62,29 +62,31 @@ import { ButtonColor } from './types';
         <mat-menu #walletMenu="matMenu">
           <button
             *ngIf="publicKey"
-            mat-menu-item
             [cdkCopyToClipboard]="publicKey.toBase58()"
+            mat-menu-item
           >
             <mat-icon>content_copy</mat-icon>
             Copy address
           </button>
           <button
-            mat-menu-item
             #walletModalTrigger="hdWalletModalTrigger"
-            hdWalletModalTrigger
-            panelClass="mat-dialog"
+            #selectWallet="hdSelectWallet"
             (click)="walletModalTrigger.open(wallets)"
-            (selectWallet)="selectWallet($event)"
+            (selectWallet)="selectWallet.run($event)"
+            mat-menu-item
+            hdWalletModalTrigger
+            hdSelectWallet
+            panelClass="mat-dialog"
           >
             <mat-icon>sync_alt</mat-icon>
             Connect a different wallet
           </button>
           <mat-divider></mat-divider>
           <button
-            mat-menu-item
             #disconnectWallet="hdDisconnectWallet"
-            hdDisconnectWallet
             (click)="disconnectWallet.run()"
+            mat-menu-item
+            hdDisconnectWallet
           >
             <mat-icon>logout</mat-icon>
             Disconnect
@@ -112,18 +114,19 @@ import { ButtonColor } from './types';
     CommonModule,
     ClipboardModule,
     CdkMenuModule,
-    HdWalletAdapterDirective,
-    HdWalletIconComponent,
-    HdWalletModalTriggerDirective,
-    HdDisconnectWalletDirective,
-    HdObscureAddressPipe,
-    HdWalletModalComponent,
-    HdWalletModalButtonComponent,
-    HdWalletConnectButtonComponent,
     MatButtonModule,
     MatDividerModule,
     MatIconModule,
     MatMenuModule,
+    HdWalletAdapterDirective,
+    HdWalletIconComponent,
+    HdWalletModalTriggerDirective,
+    HdDisconnectWalletDirective,
+    HdSelectWalletDirective,
+    HdObscureAddressPipe,
+    HdWalletModalComponent,
+    HdWalletModalButtonComponent,
+    HdWalletConnectButtonComponent,
   ],
 })
 export class HdWalletMultiButtonComponent {

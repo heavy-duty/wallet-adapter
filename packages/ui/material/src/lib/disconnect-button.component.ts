@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { NgIf } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -19,16 +19,16 @@ import { ButtonColor } from './types';
   selector: 'hd-wallet-disconnect-button',
   template: `
     <button
-      *hdWalletAdapter="let wallet = wallet; let disconnecting = disconnecting"
-      hdDisconnectWallet
       #disconnectWallet="hdDisconnectWallet"
-      mat-raised-button
+      *hdWalletAdapter="let wallet = wallet; let disconnecting = disconnecting"
       [color]="color"
       [disabled]="disconnecting || !wallet"
       (click)="disconnectWallet.run()"
+      hdDisconnectWallet
+      mat-raised-button
     >
       <ng-content></ng-content>
-      <div class="button-content" *ngIf="!children">
+      <div *ngIf="!children" class="button-content">
         <hd-wallet-icon *ngIf="wallet" [wallet]="wallet"></hd-wallet-icon>
         {{ getMessage(disconnecting, wallet) }}
       </div>
@@ -46,11 +46,11 @@ import { ButtonColor } from './types';
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
-    CommonModule,
+    NgIf,
+    MatButtonModule,
     HdWalletAdapterDirective,
     HdWalletIconComponent,
     HdDisconnectWalletDirective,
-    MatButtonModule,
   ],
 })
 export class HdWalletDisconnectButtonComponent {

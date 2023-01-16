@@ -7,7 +7,6 @@ import {
 } from '@angular/core';
 import { Wallet, WalletStore } from '@heavy-duty/wallet-adapter';
 import { ComponentStore } from '@ngrx/component-store';
-import { WalletName } from '@solana/wallet-adapter-base';
 import { PublicKey } from '@solana/web3.js';
 import { tap } from 'rxjs';
 
@@ -19,7 +18,6 @@ export class HdWalletAdapterContext {
   public disconnecting!: boolean;
   public publicKey!: PublicKey | null;
   public wallets!: Wallet[];
-  public selectWallet!: (wallet: WalletName | null) => void;
 }
 
 interface Changes {
@@ -80,8 +78,6 @@ export class HdWalletAdapterDirective extends ComponentStore<object> {
         this._context.wallet = wallet;
         this._context.publicKey = publicKey;
         this._context.wallets = wallets;
-        this._context.selectWallet = (walletName: WalletName | null) =>
-          this._walletStore.selectWallet(walletName);
         this._changeDetectionRef.markForCheck();
       }
     )
