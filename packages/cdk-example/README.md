@@ -11,7 +11,8 @@ By following this instructions you'll be able to set up the wallet-adapter into 
 "@solana/web3.js": "1.73.0",
 "rxjs": "7.5.2",
 "@solana/wallet-adapter-base": "0.9.20"
-"@heavy-duty/wallet-adapter": "0.5.1"
+"@heavy-duty/wallet-adapter": "0.6.0"
+"@heavy-duty/wallet-adapter-cdk": "0.6.0"
 "@angular-builders/custom-webpack": "15.0.0"
 ```
 
@@ -307,32 +308,32 @@ import {
         </div>
 
         <fieldset
-          hdSelectWallet
           #selectWallet="hdSelectWallet"
           (walletSelected)="onWalletSelected($event)"
+          hdSelectWallet
         >
           <legend>Select a wallet:</legend>
 
           <div>
             <input
-              type="radio"
               id="select-wallet-empty"
-              name="walletName"
               [value]="null"
               [ngModel]="wallet?.adapter?.name ?? null"
               (ngModelChange)="selectWallet.run(null)"
+              type="radio"
+              name="walletName"
             />
             <label for="select-wallet-empty"> None </label>
           </div>
 
           <div *ngFor="let wallet of wallets; let i = index">
             <input
-              type="radio"
               [id]="'select-wallet-' + i"
-              name="walletName"
               [value]="wallet.adapter.name"
               [ngModel]="wallet?.adapter?.name ?? null"
               (ngModelChange)="selectWallet.run(wallet.adapter.name)"
+              type="radio"
+              name="walletName"
             />
             <label [for]="'select-wallet-' + i">
               {{ wallet.adapter.name }}
@@ -423,32 +424,32 @@ import {
         </div>
 
         <fieldset
-          hdSelectWallet
           #selectWallet="hdSelectWallet"
           (walletSelected)="onWalletSelected($event)"
+          hdSelectWallet
         >
           <legend>Select a wallet:</legend>
 
           <div>
             <input
-              type="radio"
               id="select-wallet-empty"
-              name="walletName"
               [value]="null"
               [ngModel]="wallet?.adapter?.name ?? null"
               (ngModelChange)="selectWallet.run(null)"
+              type="radio"
+              name="walletName"
             />
             <label for="select-wallet-empty"> None </label>
           </div>
 
           <div *ngFor="let wallet of wallets; let i = index">
             <input
-              type="radio"
               [id]="'select-wallet-' + i"
-              name="walletName"
               [value]="wallet.adapter.name"
               [ngModel]="wallet?.adapter?.name ?? null"
               (ngModelChange)="selectWallet.run(wallet.adapter.name)"
+              type="radio"
+              name="walletName"
             />
             <label [for]="'select-wallet-' + i">
               {{ wallet.adapter.name }}
@@ -457,13 +458,13 @@ import {
         </fieldset>
 
         <button
-          (click)="connectWallet.run()"
-          [disabled]="connected || wallet === null"
-          hdConnectWallet
           #connectWallet="hdConnectWallet"
+          [disabled]="connected || wallet === null"
+          (click)="connectWallet.run()"
           (connectWalletStarts)="onConnectWalletStarts()"
           (connectWalletError)="onConnectWalletError($event)"
           (walletConnected)="onWalletConnected()"
+          hdConnectWallet
         >
           Connect
         </button>
@@ -564,32 +565,32 @@ import {
         </div>
 
         <fieldset
-          hdSelectWallet
           #selectWallet="hdSelectWallet"
           (walletSelected)="onWalletSelected($event)"
+          hdSelectWallet
         >
           <legend>Select a wallet:</legend>
 
           <div>
             <input
-              type="radio"
               id="select-wallet-empty"
-              name="walletName"
               [value]="null"
               [ngModel]="wallet?.adapter?.name ?? null"
               (ngModelChange)="selectWallet.run(null)"
+              type="radio"
+              name="walletName"
             />
             <label for="select-wallet-empty"> None </label>
           </div>
 
           <div *ngFor="let wallet of wallets; let i = index">
             <input
-              type="radio"
               [id]="'select-wallet-' + i"
-              name="walletName"
               [value]="wallet.adapter.name"
               [ngModel]="wallet?.adapter?.name ?? null"
               (ngModelChange)="selectWallet.run(wallet.adapter.name)"
+              type="radio"
+              name="walletName"
             />
             <label [for]="'select-wallet-' + i">
               {{ wallet.adapter.name }}
@@ -598,24 +599,24 @@ import {
         </fieldset>
 
         <button
-          (click)="connectWallet.run()"
-          [disabled]="connected || wallet === null"
-          hdConnectWallet
           #connectWallet="hdConnectWallet"
+          [disabled]="connected || wallet === null"
+          (click)="connectWallet.run()"
           (connectWalletStarts)="onConnectWalletStarts()"
           (connectWalletError)="onConnectWalletError($event)"
           (walletConnected)="onWalletConnected()"
+          hdConnectWallet
         >
           Connect
         </button>
         <button
-          (click)="disconnectWallet.run()"
-          [disabled]="!connected"
-          hdDisconnectWallet
           #disconnectWallet="hdDisconnectWallet"
+          [disabled]="!connected"
+          (click)="disconnectWallet.run()"
           (disconnectWalletStarts)="onDisconnectWalletStarts()"
           (disconnectWalletError)="onDisconnectWalletError($event)"
           (walletDisconnected)="onWalletDisconnected()"
+          hdDisconnectWallet
         >
           Disconnect
         </button>

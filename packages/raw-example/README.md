@@ -10,7 +10,7 @@ By following this instructions you'll be able to set up the wallet-adapter into 
 "@solana/web3.js": "1.73.0",
 "rxjs": "7.5.2",
 "@solana/wallet-adapter-base": "0.9.20"
-"@heavy-duty/wallet-adapter": "0.5.1"
+"@heavy-duty/wallet-adapter": "0.6.0"
 "@angular-builders/custom-webpack": "15.0.0"
 ```
 
@@ -324,22 +324,22 @@ import {
 
           <div>
             <input
-              type="radio"
               id="select-wallet-empty"
-              name="walletName"
               [formControl]="selectWalletControl"
               [value]="null"
+              type="radio"
+              name="walletName"
             />
             <label for="select-wallet-empty">None</label>
           </div>
 
           <div *ngFor="let wallet of wallets$ | async; let i = index">
             <input
-              type="radio"
               [id]="'select-wallet-' + i"
-              name="walletName"
               [formControl]="selectWalletControl"
               [value]="wallet.adapter.name"
+              type="radio"
+              name="walletName"
             />
             <label [for]="'select-wallet-' + i">
               {{ wallet.adapter.name }}
@@ -348,14 +348,14 @@ import {
         </fieldset>
 
         <button
-          (click)="onConnect()"
           [disabled]="connected$ | async || (wallet$ | async) === null"
+          (click)="onConnect()"
         >
           Connect
         </button>
         <button
-          (click)="onDisconnect()"
           [disabled]="(connected$ | async) === false"
+          (click)="onDisconnect()"
         >
           Disconnect
         </button>
