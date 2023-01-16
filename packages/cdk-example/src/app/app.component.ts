@@ -8,7 +8,7 @@ import {
   HdObscureAddressPipe,
   HdSelectWalletDirective,
   HdWalletAdapterDirective,
-} from '@heavy-duty/wallet-adapter/cdk';
+} from '@heavy-duty/wallet-adapter-cdk';
 import { WalletName } from '@solana/wallet-adapter-base';
 import {
   PhantomWalletAdapter,
@@ -46,32 +46,32 @@ import {
         </div>
 
         <fieldset
-          hdSelectWallet
           #selectWallet="hdSelectWallet"
           (walletSelected)="onWalletSelected($event)"
+          hdSelectWallet
         >
           <legend>Select a wallet:</legend>
 
           <div>
             <input
-              type="radio"
               id="select-wallet-empty"
-              name="walletName"
               [value]="null"
               [ngModel]="wallet?.adapter?.name ?? null"
               (ngModelChange)="selectWallet.run(null)"
+              type="radio"
+              name="walletName"
             />
             <label for="select-wallet-empty"> None </label>
           </div>
 
           <div *ngFor="let wallet of wallets; let i = index">
             <input
-              type="radio"
               [id]="'select-wallet-' + i"
-              name="walletName"
               [value]="wallet.adapter.name"
               [ngModel]="wallet?.adapter?.name ?? null"
               (ngModelChange)="selectWallet.run(wallet.adapter.name)"
+              type="radio"
+              name="walletName"
             />
             <label [for]="'select-wallet-' + i">
               {{ wallet.adapter.name }}
@@ -80,24 +80,24 @@ import {
         </fieldset>
 
         <button
-          (click)="connectWallet.run()"
-          [disabled]="connected || wallet === null"
-          hdConnectWallet
           #connectWallet="hdConnectWallet"
+          [disabled]="connected || wallet === null"
+          (click)="connectWallet.run()"
           (connectWalletStarts)="onConnectWalletStarts()"
           (connectWalletError)="onConnectWalletError($event)"
           (walletConnected)="onWalletConnected()"
+          hdConnectWallet
         >
           Connect
         </button>
         <button
-          (click)="disconnectWallet.run()"
-          [disabled]="!connected"
-          hdDisconnectWallet
           #disconnectWallet="hdDisconnectWallet"
+          [disabled]="!connected"
+          (click)="disconnectWallet.run()"
           (disconnectWalletStarts)="onDisconnectWalletStarts()"
           (disconnectWalletError)="onDisconnectWalletError($event)"
           (walletDisconnected)="onWalletDisconnected()"
+          hdDisconnectWallet
         >
           Disconnect
         </button>
