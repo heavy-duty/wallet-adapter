@@ -1,12 +1,8 @@
 import { AsyncPipe, NgFor, NgIf } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { provideWalletAdapter, WalletStore } from '@heavy-duty/wallet-adapter';
+import { WalletStore } from '@heavy-duty/wallet-adapter';
 import { WalletName } from '@solana/wallet-adapter-base';
-import {
-  PhantomWalletAdapter,
-  SolflareWalletAdapter,
-} from '@solana/wallet-adapter-wallets';
 
 @Component({
   standalone: true,
@@ -41,22 +37,22 @@ import {
 
           <div>
             <input
-              type="radio"
               id="select-wallet-empty"
-              name="walletName"
               [formControl]="selectWalletControl"
               [value]="null"
+              type="radio"
+              name="walletName"
             />
             <label for="select-wallet-empty">None</label>
           </div>
 
           <div *ngFor="let wallet of wallets$ | async; let i = index">
             <input
-              type="radio"
               [id]="'select-wallet-' + i"
-              name="walletName"
               [formControl]="selectWalletControl"
               [value]="wallet.adapter.name"
+              type="radio"
+              name="walletName"
             />
             <label [for]="'select-wallet-' + i">
               {{ wallet.adapter.name }}
@@ -65,14 +61,14 @@ import {
         </fieldset>
 
         <button
-          (click)="onConnect()"
           [disabled]="(connected$ | async) || (wallet$ | async) === null"
+          (click)="onConnect()"
         >
           Connect
         </button>
         <button
-          (click)="onDisconnect()"
           [disabled]="(connected$ | async) === false"
+          (click)="onDisconnect()"
         >
           Disconnect
         </button>
@@ -80,12 +76,6 @@ import {
     </main>
   `,
   imports: [NgIf, NgFor, AsyncPipe, ReactiveFormsModule],
-  providers: [
-    provideWalletAdapter({
-      autoConnect: false,
-      adapters: [new PhantomWalletAdapter(), new SolflareWalletAdapter()],
-    }),
-  ],
 })
 export class AppComponent implements OnInit {
   private readonly _walletStore = inject(WalletStore);
