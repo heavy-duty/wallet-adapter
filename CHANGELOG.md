@@ -22,6 +22,7 @@ The minor version will be incremented upon a breaking change and the patch versi
 - cdk: add `HdSelectWalletDirective` to give HTML elements the ability to select a wallet.
 - material: add `HdWalletModalTriggerDirective` to give HTML elements the ability to open the material select wallet modal.
 - cdk-example: create a cdk example app and added instructions on how to get there in the README.
+- material-example: create a material example app and added instructions on how to get there in the README.
 
 ### Breaking changes
 

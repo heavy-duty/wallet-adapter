@@ -73,7 +73,7 @@ export class AppComponent {
 
 | Angular | @heavy-duty/wallet-adapter |
 | ------- | -------------------------- |
-| 15      | ^0.5                       |
+| 15      | ^0.5, ^0.6                 |
 | 14      | ^0.4                       |
 | 13      | ^0.3                       |
 | 12      | ^0.2                       |
@@ -82,4 +82,8 @@ export class AppComponent {
 
 ## Resources
 
-[Quickstart](/packages/raw-example/README.md) - Let your users select a wallet and connect to it.
+- [Quickstart](/packages/raw-example/README.md) - Let your users select a wallet and connect to it.
+- [Quickstart CDK](/packages/cdk-example/README.md) - Let your users select a wallet and connect to it using the headless UI package.
+- [Quickstart Material](/packages/material-example/README.md) - Let your users select a wallet and connect to it using Angular Material UI.
+
+NOTE: Using the material package is the easiest way to get started, but it's less customizable, instead if you want a custom experience use the CDK or the base library.
