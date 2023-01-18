@@ -32,7 +32,7 @@ The minor version will be incremented upon a breaking change and the patch versi
 - cdk: remove `HdWalletModalButtonDirective`.
 - material: remove `HdWalletModalTriggerDirective`.
 - cdk: remove `selectWallet` from `HdWalletAdapterDirective`
-- cdk: add `hd` prefix to all elements.
+- cdk: add `hd` prefix to all inputs and outputs from elements.
 
 ## [0.5.1] - 2023-01-15
 
