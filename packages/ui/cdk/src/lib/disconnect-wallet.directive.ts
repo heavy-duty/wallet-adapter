@@ -9,16 +9,16 @@ import { WalletStore } from '@heavy-duty/wallet-adapter';
 export class HdDisconnectWalletDirective {
   private readonly _walletStore = inject(WalletStore);
 
-  @Output() walletDisconnected = new EventEmitter();
-  @Output() disconnectWalletStarts = new EventEmitter();
-  @Output() disconnectWalletError = new EventEmitter();
+  @Output() hdWalletDisconnected = new EventEmitter();
+  @Output() hdDisconnectWalletStarts = new EventEmitter();
+  @Output() hdDisconnectWalletError = new EventEmitter();
 
   run() {
-    this.disconnectWalletStarts.emit();
+    this.hdDisconnectWalletStarts.emit();
 
     this._walletStore.disconnect().subscribe({
-      next: () => this.walletDisconnected.emit(),
-      error: (error) => this.disconnectWalletError.emit(error),
+      next: () => this.hdWalletDisconnected.emit(),
+      error: (error) => this.hdDisconnectWalletError.emit(error),
     });
   }
 }

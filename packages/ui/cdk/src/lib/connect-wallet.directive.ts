@@ -9,16 +9,16 @@ import { WalletStore } from '@heavy-duty/wallet-adapter';
 export class HdConnectWalletDirective {
   private readonly _walletStore = inject(WalletStore);
 
-  @Output() walletConnected = new EventEmitter();
-  @Output() connectWalletStarts = new EventEmitter();
-  @Output() connectWalletError = new EventEmitter();
+  @Output() hdWalletConnected = new EventEmitter();
+  @Output() hdConnectWalletStarts = new EventEmitter();
+  @Output() hdConnectWalletError = new EventEmitter();
 
   run() {
-    this.connectWalletStarts.emit();
+    this.hdConnectWalletStarts.emit();
 
     this._walletStore.connect().subscribe({
-      next: () => this.walletConnected.emit(),
-      error: (error) => this.connectWalletError.emit(error),
+      next: () => this.hdWalletConnected.emit(),
+      error: (error) => this.hdConnectWalletError.emit(error),
     });
   }
 }

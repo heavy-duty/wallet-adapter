@@ -39,8 +39,8 @@ const initialState: ViewModel = {
 export class HdWalletModalTriggerDirective extends ComponentStore<ViewModel> {
   private readonly _matDialog = inject(MatDialog);
 
-  @Input() panelClass = '';
-  @Output() selectWallet = new EventEmitter<WalletName>();
+  @Input() hdPanelClass = '';
+  @Output() hdSelectWallet = new EventEmitter<WalletName>();
 
   private readonly _handleOpen = this.effect<Wallet[]>(
     exhaustMap((wallets) => {
@@ -50,7 +50,7 @@ export class HdWalletModalTriggerDirective extends ComponentStore<ViewModel> {
         .open<HdWalletModalComponent, { wallets: Wallet[] }, WalletName>(
           HdWalletModalComponent,
           {
-            panelClass: ['wallet-modal', ...this.panelClass.split(' ')],
+            panelClass: ['wallet-modal', ...this.hdPanelClass.split(' ')],
             maxWidth: '380px',
             maxHeight: '90vh',
             data: {
@@ -62,7 +62,7 @@ export class HdWalletModalTriggerDirective extends ComponentStore<ViewModel> {
         .pipe(
           tap((walletName) => {
             if (walletName) {
-              this.selectWallet.emit(walletName);
+              this.hdSelectWallet.emit(walletName);
             }
             this.patchState({ isOpen: false });
           })
@@ -102,7 +102,7 @@ export class HdWalletModalTriggerDirective extends ComponentStore<ViewModel> {
           *ngFor="let wallet of installedWallets"
           [value]="wallet.adapter.name"
         >
-          <hd-wallet-list-item [wallet]="wallet"></hd-wallet-list-item>
+          <hd-wallet-list-item [hdWallet]="wallet"></hd-wallet-list-item>
         </mat-list-option>
         <mat-expansion-panel
           #expansionPanel="matExpansionPanel"
@@ -114,7 +114,7 @@ export class HdWalletModalTriggerDirective extends ComponentStore<ViewModel> {
               *ngFor="let wallet of otherWallets"
               [value]="wallet.adapter.name"
             >
-              <hd-wallet-list-item [wallet]="wallet"> </hd-wallet-list-item>
+              <hd-wallet-list-item [hdWallet]="wallet"> </hd-wallet-list-item>
             </mat-list-option>
           </ng-template>
         </mat-expansion-panel>
@@ -170,7 +170,7 @@ export class HdWalletModalTriggerDirective extends ComponentStore<ViewModel> {
               *ngFor="let wallet of otherWallets"
               [value]="wallet.adapter.name"
             >
-              <hd-wallet-list-item [wallet]="wallet"> </hd-wallet-list-item>
+              <hd-wallet-list-item [hdWallet]="wallet"> </hd-wallet-list-item>
             </mat-list-option>
           </mat-selection-list>
         </ng-template>

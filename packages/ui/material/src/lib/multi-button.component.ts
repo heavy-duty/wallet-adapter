@@ -55,7 +55,7 @@ import { ButtonColor } from './types';
         >
           <ng-content></ng-content>
           <div *ngIf="!children" class="button-content">
-            <hd-wallet-icon *ngIf="wallet" [wallet]="wallet"></hd-wallet-icon>
+            <hd-wallet-icon *ngIf="wallet" [hdWallet]="wallet"></hd-wallet-icon>
             {{ publicKey?.toBase58() | hdObscureAddress }}
           </div>
         </button>
@@ -70,9 +70,9 @@ import { ButtonColor } from './types';
           </button>
           <button
             #walletModalTrigger="hdWalletModalTrigger"
-            #selectWallet="hdSelectWallet"
+            #hdSelectWallet="hdSelectWallet"
             (click)="walletModalTrigger.open(wallets)"
-            (selectWallet)="selectWallet.run($event)"
+            (hdSelectWallet)="hdSelectWallet.run($event)"
             mat-menu-item
             hdWalletModalTrigger
             hdSelectWallet
@@ -83,8 +83,8 @@ import { ButtonColor } from './types';
           </button>
           <mat-divider></mat-divider>
           <button
-            #disconnectWallet="hdDisconnectWallet"
-            (click)="disconnectWallet.run()"
+            #hdDisconnectWallet="hdDisconnectWallet"
+            (click)="hdDisconnectWallet.run()"
             mat-menu-item
             hdDisconnectWallet
           >

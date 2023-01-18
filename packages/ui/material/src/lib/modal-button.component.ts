@@ -24,11 +24,11 @@ import { ButtonColor } from './types';
   template: `
     <button
       #hdWalletModalTrigger="hdWalletModalTrigger"
-      #selectWallet="hdSelectWallet"
+      #hdSelectWallet="hdSelectWallet"
       *hdWalletAdapter="let wallets = wallets"
       [color]="color"
       (click)="hdWalletModalTrigger.open(wallets)"
-      (selectWallet)="selectWallet.run($event)"
+      (hdSelectWallet)="hdSelectWallet.run($event)"
       mat-raised-button
       hdWalletModalTrigger
       hdSelectWallet

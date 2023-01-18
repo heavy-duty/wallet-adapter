@@ -19,17 +19,17 @@ import { ButtonColor } from './types';
   selector: 'hd-wallet-disconnect-button',
   template: `
     <button
-      #disconnectWallet="hdDisconnectWallet"
+      #hdDisconnectWallet="hdDisconnectWallet"
       *hdWalletAdapter="let wallet = wallet; let disconnecting = disconnecting"
       [color]="color"
       [disabled]="disconnecting || !wallet"
-      (click)="disconnectWallet.run()"
+      (click)="hdDisconnectWallet.run()"
       hdDisconnectWallet
       mat-raised-button
     >
       <ng-content></ng-content>
       <div *ngIf="!children" class="button-content">
-        <hd-wallet-icon *ngIf="wallet" [wallet]="wallet"></hd-wallet-icon>
+        <hd-wallet-icon *ngIf="wallet" [hdWallet]="wallet"></hd-wallet-icon>
         {{ getMessage(disconnecting, wallet) }}
       </div>
     </button>

@@ -19,7 +19,7 @@ import { ButtonColor } from './types';
   selector: 'hd-wallet-connect-button',
   template: `
     <button
-      #connectWallet="hdConnectWallet"
+      #hdConnectWallet="hdConnectWallet"
       *hdWalletAdapter="
         let wallet = wallet;
         let connecting = connecting;
@@ -27,13 +27,13 @@ import { ButtonColor } from './types';
       "
       [color]="color"
       [disabled]="connecting || !wallet || connected || disabled"
-      (click)="connectWallet.run()"
+      (click)="hdConnectWallet.run()"
       hdConnectWallet
       mat-raised-button
     >
       <ng-content></ng-content>
       <div *ngIf="!children" class="button-content">
-        <hd-wallet-icon *ngIf="wallet" [wallet]="wallet"></hd-wallet-icon>
+        <hd-wallet-icon *ngIf="wallet" [hdWallet]="wallet"></hd-wallet-icon>
         {{ getMessage(connected, connecting, wallet) }}
       </div>
     </button>

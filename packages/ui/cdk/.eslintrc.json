@@ -5,6 +5,7 @@
     {
       "files": ["*.ts"],
       "rules": {
+        "@angular-eslint/no-outputs-metadata-property": "off",
         "@angular-eslint/directive-selector": [
           "error",
           {

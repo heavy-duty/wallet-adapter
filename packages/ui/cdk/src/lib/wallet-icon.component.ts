@@ -4,7 +4,7 @@ import { HdSanitizeUrlPipe } from './internals';
 
 @Component({
   selector: 'hd-wallet-icon',
-  template: ` <img [src]="wallet.adapter.icon | hdSanitizeUrl" alt="" /> `,
+  template: ` <img [src]="hdWallet.adapter.icon | hdSanitizeUrl" alt="" /> `,
   styles: [
     `
       :host {
@@ -22,5 +22,5 @@ import { HdSanitizeUrlPipe } from './internals';
   imports: [HdSanitizeUrlPipe],
 })
 export class HdWalletIconComponent {
-  @Input() wallet!: Wallet;
+  @Input() hdWallet!: Wallet;
 }

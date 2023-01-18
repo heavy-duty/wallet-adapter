@@ -7,12 +7,12 @@ import { HdWalletIconComponent } from './wallet-icon.component';
 @Component({
   selector: 'hd-wallet-list-item',
   template: `
-    <div *ngIf="wallet" class="wallet-name">
-      <hd-wallet-icon [wallet]="wallet"></hd-wallet-icon>
-      <span>{{ wallet.adapter.name }}</span>
+    <div *ngIf="hdWallet" class="wallet-name">
+      <hd-wallet-icon [hdWallet]="hdWallet"></hd-wallet-icon>
+      <span>{{ hdWallet.adapter.name }}</span>
     </div>
 
-    <span class="wallet-detected" *ngIf="isDetected()">Detected</span>
+    <span *ngIf="isDetected()" class="wallet-detected">Detected</span>
   `,
   styles: [
     `
@@ -42,12 +42,12 @@ import { HdWalletIconComponent } from './wallet-icon.component';
   imports: [NgIf, HdWalletIconComponent],
 })
 export class HdWalletListItemComponent {
-  @Input() wallet: Wallet | null = null;
+  @Input() hdWallet: Wallet | null = null;
 
   isDetected() {
     return (
-      this.wallet?.readyState &&
-      this.wallet.readyState === WalletReadyState.Installed
+      this.hdWallet?.readyState &&
+      this.hdWallet.readyState === WalletReadyState.Installed
     );
   }
 }

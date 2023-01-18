@@ -1,17 +1,17 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import { inject, Pipe, PipeTransform } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Pipe({
-	name: 'hdSanitizeUrl',
-	pure: true,
-	standalone: true,
+  name: 'hdSanitizeUrl',
+  pure: true,
+  standalone: true,
 })
 export class HdSanitizeUrlPipe implements PipeTransform {
-	constructor(private readonly _domSanitizer: DomSanitizer) {}
+  private readonly _domSanitizer = inject(DomSanitizer);
 
-	transform(value?: string): SafeResourceUrl {
-		return value !== undefined
-			? this._domSanitizer.bypassSecurityTrustResourceUrl(value)
-			: '';
-	}
+  transform(value?: string): SafeResourceUrl {
+    return value !== undefined
+      ? this._domSanitizer.bypassSecurityTrustResourceUrl(value)
+      : '';
+  }
 }
