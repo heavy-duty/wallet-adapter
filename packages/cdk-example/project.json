@@ -6,7 +6,7 @@
   "prefix": "hd",
   "targets": {
     "build": {
-      "executor": "@nrwl/angular:webpack-browser",
+      "executor": "@angular-devkit/build-angular:browser",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/packages/cdk-example",
@@ -19,10 +19,7 @@
           "packages/cdk-example/src/assets"
         ],
         "styles": ["packages/cdk-example/src/styles.css"],
-        "scripts": [],
-        "customWebpackConfig": {
-          "path": "packages/cdk-example/webpack.config.js"
-        }
+        "scripts": []
       },
       "configurations": {
         "production": {
@@ -52,7 +49,7 @@
       "defaultConfiguration": "production"
     },
     "serve": {
-      "executor": "@nrwl/angular:webpack-dev-server",
+      "executor": "@angular-devkit/build-angular:dev-server",
       "configurations": {
         "production": {
           "browserTarget": "cdk-example:build:production"

@@ -1,11 +1,9 @@
 import { NgClass, NgFor, NgIf } from '@angular/common';
 import { Component } from '@angular/core';
 import {
-  HdConnectWalletDirective,
   HdDisconnectWalletDirective,
   HdObscureAddressPipe,
   HdSelectAndConnectWalletDirective,
-  HdSelectWalletDirective,
   HdWalletAdapterDirective,
   HdWalletIconComponent,
 } from '@heavy-duty/wallet-adapter-cdk';
@@ -95,10 +93,8 @@ import {
     NgIf,
     NgFor,
     NgClass,
-    HdConnectWalletDirective,
     HdSelectAndConnectWalletDirective,
     HdDisconnectWalletDirective,
-    HdSelectWalletDirective,
     HdWalletAdapterDirective,
     HdObscureAddressPipe,
     HdWalletIconComponent,

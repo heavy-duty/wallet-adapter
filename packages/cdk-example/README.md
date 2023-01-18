@@ -1,140 +1,25 @@
 # CDK Example
 
-By following this instructions you'll be able to set up the wallet-adapter into an angular application using the CDK.
+By following this instructions you'll be able to set up the wallet-adapter into an angular application using the headless UI package and tailwindcss.
 
 ## Pre-requisites
 
+The application should have tailwindcss already configured.
+
 ```
+"rxjs": "7.5.2",
 "@angular/core": "15.1.0",
-"@angular/cdk": "15.1.0",
 "@ngrx/component-store": "15.0.0",
 "@solana/web3.js": "1.73.0",
-"rxjs": "7.5.2",
-"@solana/wallet-adapter-base": "0.9.20"
-"@heavy-duty/wallet-adapter": "0.6.0"
-"@heavy-duty/wallet-adapter-cdk": "0.6.0"
-"@angular-builders/custom-webpack": "15.0.0"
+"@solana/wallet-adapter-base": "0.9.20",
+"@solana/wallet-adapter-phantom": "0.9.19",
+"@solana/wallet-adapter-solflare": "0.6.21",
 ```
-
-NOTE: If you're using Nx you don't need `@angular-builders/custom-webpack`.
 
 ## Installation
 
-### ng
-
 ```
-$ ng add @heavy-duty/wallet-adapter
-```
-
-### npm
-
-```
-$ npm install --save @heavy-duty/wallet-adapter
-```
-
-## Development Configuration Setup
-
-### Add `webpack.config.js` to the root of project folder and add the following inside the file
-
-```js
-module.exports = (config) => {
-  config.resolve.fallback = {
-    crypto: false,
-    stream: false,
-  };
-
-  return config;
-};
-```
-
-### Update `angular.json`
-
-**Set `architect.build.builder` to `"@angular-builders/custom-webpack:browser"`**
-
-```json
-"architect": {
-	"build": {
-	 	"builder": "@angular-builders/custom-webpack:browser",
-	 	...
- 	},
- 	...
- }
-```
-
-**In `architect.build.options`, add custom-webpack configuration**
-
-```json
-"architect": {
-	...
-	"build": {
-		...
-	 	"options": {
-	 		...
-	 		"customWebpackConfig": {
-              "path": "<PATH_TO_THE_WEBPACK_CONFIG>"
-            }
-	 	}
- 	},
- 	...
- }
-```
-
-**Set `architect.serve.builder` to `"@angular-builders/custom-webpack:dev-server"`**
-
-```json
-"architect": {
-	...
-	"serve": {
-	 	"builder": "@angular-builders/custom-webpack:dev-server",
-	 	...
- 	},
- 	...
- }
-```
-
-### Update `project.json` (Nx workspace only)
-
-**Set `architect.build.executor` to `"@nrwl/angular:webpack-browser"`**
-
-```json
-"architect": {
-	"build": {
-	 	"executor": "@nrwl/angular:webpack-browser",
-	 	...
- 	},
- 	...
- }
-```
-
-**In `architect.build.options`, add custom-webpack configuration**
-
-```json
-"architect": {
-	...
-	"build": {
-		...
-	 	"options": {
-	 		...
-	 		"customWebpackConfig": {
-        "path": "<PATH_TO_THE_WEBPACK_CONFIG>"
-      }
-	 	}
- 	},
- 	...
- }
-```
-
-**Set `architect.serve.executor` to `"@nrwl/angular:webpack-dev-server"`**
-
-```json
-"architect": {
-	...
-	"serve": {
-	 	"executor": "@nrwl/angular:webpack-dev-server",
-	 	...
- 	},
- 	...
- }
+$ npm install --save @heavy-duty/wallet-adapter @heavy-duty/wallet-adapter-cdk
 ```
 
 ## Usage
@@ -166,10 +51,8 @@ For Angular applications using standalone:
 ```ts
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideWalletAdapter } from '@heavy-duty/wallet-adapter';
-import {
-  PhantomWalletAdapter,
-  SolflareWalletAdapter,
-} from '@solana/wallet-adapter-wallets';
+import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom';
+import { SolflareWalletAdapter } from '@solana/wallet-adapter-solflare';
 import { AppComponent } from './app/app.component';
 
 bootstrapApplication(AppComponent, {
@@ -192,17 +75,12 @@ Now we have to add some wallet interactions, it would look something like this:
 This will result in something like:
 
 ```ts
-import { AsyncPipe, NgIf } from '@angular/common';
-import { Component, inject } from '@angular/core';
-import { provideWalletAdapter, WalletStore } from '@heavy-duty/wallet-adapter';
+import { NgClass, NgFor, NgIf } from '@angular/common';
+import { Component } from '@angular/core';
 import {
-  HdWalletAdapterDirective,
   HdObscureAddressPipe,
-} from '@heavy-duty/wallet-adapter/cdk';
-import {
-  PhantomWalletAdapter,
-  SolflareWalletAdapter,
-} from '@solana/wallet-adapter-wallets';
+  HdWalletAdapterDirective,
+} from '@heavy-duty/wallet-adapter-cdk';
 
 @Component({
   standalone: true,
@@ -215,64 +93,71 @@ import {
         let publicKey = publicKey;
         let wallets = wallets
       "
+      class="max-w-[36rem] mx-auto my-16 border-2 border-black p-4"
     >
       <header>
-        <h1>Wallet Adapter Example (CDK)</h1>
+        <h1 class="text-2xl text-center">Wallet Adapter Example (CDK)</h1>
       </header>
 
       <section>
-        <div>
+        <div class="my-4">
           <p>
             Wallet:
             {{ wallet !== null ? wallet.adapter.name : 'None' }}
           </p>
 
-          <p *ngIf="publicKey">
-            Public Key: {{ publicKey.toBase58() | hdObscureAddress }}
+          <p>
+            Public Key:
+            <span *ngIf="publicKey; else noWalletConnected">
+              {{ publicKey.toBase58() | hdObscureAddress }}
+            </span>
+            <ng-template #noWalletConnected> None </ng-template>
           </p>
 
-          <p>Status: {{ connected ? 'connected' : 'disconnected' }}</p>
+          <p>
+            Status:
+            <span
+              [ngClass]="{
+                'text-red-600': !connected,
+                'text-green-600': connected
+              }"
+            >
+              {{ connected ? 'Connected' : 'Disconnected' }}
+            </span>
+          </p>
         </div>
       </section>
     </main>
   `,
-  imports: [NgIf, HdWalletAdapterDirective, HdObscureAddressPipe],
-  providers: [
-    provideWalletAdapter({
-      autoConnect: false,
-      adapters: [new PhantomWalletAdapter(), new SolflareWalletAdapter()],
-    }),
+  imports: [
+    NgIf,
+    NgFor,
+    NgClass,
+    HdWalletAdapterDirective,
+    HdObscureAddressPipe,
   ],
 })
 export class AppComponent {}
 ```
 
-### Select wallet
+### Select and connect wallet
 
 At this moment there's no way for the user to select a wallet in our example. We have to give users a way to see the available wallets, then choose one and use that to connect. Step by step it looks like this:
 
-- Display all wallets in a radio button group.
-- Select the wallet and update store when the input changes.
+- Display a connect button per wallet.
+- Clicking a button selects the wallet and connects to it.
 
 A simplified version of this would end up like this:
 
 ```ts
-import { NgFor, NgIf } from '@angular/common';
+import { NgClass, NgFor, NgIf } from '@angular/common';
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { provideWalletAdapter } from '@heavy-duty/wallet-adapter';
 import {
-  HdConnectWalletDirective,
-  HdDisconnectWalletDirective,
   HdObscureAddressPipe,
-  HdSelectWalletDirective,
+  HdSelectAndConnectWalletDirective,
   HdWalletAdapterDirective,
-} from '@heavy-duty/wallet-adapter/cdk';
-import { WalletName } from '@solana/wallet-adapter-base';
-import {
-  PhantomWalletAdapter,
-  SolflareWalletAdapter,
-} from '@solana/wallet-adapter-wallets';
+  HdWalletIconComponent,
+} from '@heavy-duty/wallet-adapter-cdk';
 
 @Component({
   standalone: true,
@@ -285,203 +170,68 @@ import {
         let publicKey = publicKey;
         let wallets = wallets
       "
+      class="max-w-[36rem] mx-auto my-16 border-2 border-black p-4"
     >
       <header>
-        <h1>Wallet Adapter Example (CDK)</h1>
+        <h1 class="text-2xl text-center">Wallet Adapter Example (CDK)</h1>
       </header>
 
       <section>
-        <div>
+        <div class="my-4">
           <p>
             Wallet:
             {{ wallet !== null ? wallet.adapter.name : 'None' }}
           </p>
 
-          <p *ngIf="publicKey">
-            Public Key: {{ publicKey.toBase58() | hdObscureAddress }}
+          <p>
+            Public Key:
+            <span *ngIf="publicKey; else noWalletConnected">
+              {{ publicKey.toBase58() | hdObscureAddress }}
+            </span>
+            <ng-template #noWalletConnected> None </ng-template>
           </p>
 
-          <p>Status: {{ connected ? 'connected' : 'disconnected' }}</p>
+          <p>
+            Status:
+            <span
+              [ngClass]="{
+                'text-red-600': !connected,
+                'text-green-600': connected
+              }"
+            >
+              {{ connected ? 'Connected' : 'Disconnected' }}
+            </span>
+          </p>
         </div>
 
-        <fieldset
-          #selectWallet="hdSelectWallet"
-          (walletSelected)="onWalletSelected($event)"
-          hdSelectWallet
-        >
-          <legend>Select a wallet:</legend>
+        <div class="flex gap-4">
+          <button
+            #hdSelectAndConnectWallet="hdSelectAndConnectWallet"
+            *ngFor="let wallet of wallets; let i = index"
+            class="flex justify-center items-center gap-2 px-4 py-2 bg-violet-800 text-white rounded-md disabled:cursor-not-allowed"
+            [disabled]="connected || wallet === null"
+            (click)="hdSelectAndConnectWallet.run(wallet.adapter.name)"
+            (hdConnectWalletStarts)="onConnectWalletStarts()"
+            (hdConnectWalletError)="onConnectWalletError($event)"
+            (hdWalletConnected)="onWalletConnected()"
+            hdSelectAndConnectWallet
+          >
+            <span> Connect </span>
 
-          <div>
-            <input
-              id="select-wallet-empty"
-              [value]="null"
-              [ngModel]="wallet?.adapter?.name ?? null"
-              (ngModelChange)="selectWallet.run(null)"
-              type="radio"
-              name="walletName"
-            />
-            <label for="select-wallet-empty"> None </label>
-          </div>
-
-          <div *ngFor="let wallet of wallets; let i = index">
-            <input
-              [id]="'select-wallet-' + i"
-              [value]="wallet.adapter.name"
-              [ngModel]="wallet?.adapter?.name ?? null"
-              (ngModelChange)="selectWallet.run(wallet.adapter.name)"
-              type="radio"
-              name="walletName"
-            />
-            <label [for]="'select-wallet-' + i">
-              {{ wallet.adapter.name }}
-            </label>
-          </div>
-        </fieldset>
+            <hd-wallet-icon [hdWallet]="wallet"></hd-wallet-icon>
+          </button>
+        </div>
       </section>
     </main>
   `,
   imports: [
     NgIf,
     NgFor,
-    FormsModule,
-    HdSelectWalletDirective,
+    NgClass,
+    HdSelectAndConnectWalletDirective,
     HdWalletAdapterDirective,
     HdObscureAddressPipe,
-  ],
-  providers: [
-    provideWalletAdapter({
-      autoConnect: false,
-      adapters: [new PhantomWalletAdapter(), new SolflareWalletAdapter()],
-    }),
-  ],
-})
-export class AppComponent {
-  onWalletSelected(walletName: WalletName | null) {
-    console.log(`Wallet selected: ${walletName}`);
-  }
-}
-```
-
-### Connect wallet
-
-Now that users can finally select their wallet it's time for us to let them connect to it. For this we'll follow the next steps:
-
-- Import and inject HdConnectWalletDirective.
-- Use connect wallet directive in a button.
-- Log events from connect wallet.
-
-A simplified version of this would end up like this:
-
-```ts
-import { NgFor, NgIf } from '@angular/common';
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { provideWalletAdapter } from '@heavy-duty/wallet-adapter';
-import {
-  HdConnectWalletDirective,
-  HdDisconnectWalletDirective,
-  HdObscureAddressPipe,
-  HdSelectWalletDirective,
-  HdWalletAdapterDirective,
-} from '@heavy-duty/wallet-adapter/cdk';
-import { WalletName } from '@solana/wallet-adapter-base';
-import {
-  PhantomWalletAdapter,
-  SolflareWalletAdapter,
-} from '@solana/wallet-adapter-wallets';
-
-@Component({
-  standalone: true,
-  selector: 'hd-root',
-  template: `
-    <main
-      *hdWalletAdapter="
-        let wallet = wallet;
-        let connected = connected;
-        let publicKey = publicKey;
-        let wallets = wallets
-      "
-    >
-      <header>
-        <h1>Wallet Adapter Example (CDK)</h1>
-      </header>
-
-      <section>
-        <div>
-          <p>
-            Wallet:
-            {{ wallet !== null ? wallet.adapter.name : 'None' }}
-          </p>
-
-          <p *ngIf="publicKey">
-            Public Key: {{ publicKey.toBase58() | hdObscureAddress }}
-          </p>
-
-          <p>Status: {{ connected ? 'connected' : 'disconnected' }}</p>
-        </div>
-
-        <fieldset
-          #selectWallet="hdSelectWallet"
-          (walletSelected)="onWalletSelected($event)"
-          hdSelectWallet
-        >
-          <legend>Select a wallet:</legend>
-
-          <div>
-            <input
-              id="select-wallet-empty"
-              [value]="null"
-              [ngModel]="wallet?.adapter?.name ?? null"
-              (ngModelChange)="selectWallet.run(null)"
-              type="radio"
-              name="walletName"
-            />
-            <label for="select-wallet-empty"> None </label>
-          </div>
-
-          <div *ngFor="let wallet of wallets; let i = index">
-            <input
-              [id]="'select-wallet-' + i"
-              [value]="wallet.adapter.name"
-              [ngModel]="wallet?.adapter?.name ?? null"
-              (ngModelChange)="selectWallet.run(wallet.adapter.name)"
-              type="radio"
-              name="walletName"
-            />
-            <label [for]="'select-wallet-' + i">
-              {{ wallet.adapter.name }}
-            </label>
-          </div>
-        </fieldset>
-
-        <button
-          #connectWallet="hdConnectWallet"
-          [disabled]="connected || wallet === null"
-          (click)="connectWallet.run()"
-          (connectWalletStarts)="onConnectWalletStarts()"
-          (connectWalletError)="onConnectWalletError($event)"
-          (walletConnected)="onWalletConnected()"
-          hdConnectWallet
-        >
-          Connect
-        </button>
-      </section>
-    </main>
-  `,
-  imports: [
-    NgIf,
-    NgFor,
-    FormsModule,
-    HdConnectWalletDirective,
-    HdSelectWalletDirective,
-    HdWalletAdapterDirective,
-    HdObscureAddressPipe,
-  ],
-  providers: [
-    provideWalletAdapter({
-      autoConnect: false,
-      adapters: [new PhantomWalletAdapter(), new SolflareWalletAdapter()],
-    }),
+    HdWalletIconComponent,
   ],
 })
 export class AppComponent {
@@ -495,10 +245,6 @@ export class AppComponent {
 
   onConnectWalletError(error: unknown) {
     console.error(error);
-  }
-
-  onWalletSelected(walletName: WalletName | null) {
-    console.log(`Wallet selected: ${walletName}`);
   }
 }
 ```
@@ -514,22 +260,15 @@ Now that users can finally select and connect their wallet it's time for us to l
 A simplified version of this would end up like this:
 
 ```ts
-import { NgFor, NgIf } from '@angular/common';
+import { NgClass, NgFor, NgIf } from '@angular/common';
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { provideWalletAdapter } from '@heavy-duty/wallet-adapter';
 import {
-  HdConnectWalletDirective,
   HdDisconnectWalletDirective,
   HdObscureAddressPipe,
-  HdSelectWalletDirective,
+  HdSelectAndConnectWalletDirective,
   HdWalletAdapterDirective,
-} from '@heavy-duty/wallet-adapter/cdk';
-import { WalletName } from '@solana/wallet-adapter-base';
-import {
-  PhantomWalletAdapter,
-  SolflareWalletAdapter,
-} from '@solana/wallet-adapter-wallets';
+  HdWalletIconComponent,
+} from '@heavy-duty/wallet-adapter-cdk';
 
 @Component({
   standalone: true,
@@ -542,114 +281,88 @@ import {
         let publicKey = publicKey;
         let wallets = wallets
       "
+      class="max-w-[36rem] mx-auto my-16 border-2 border-black p-4"
     >
       <header>
-        <h1>Wallet Adapter Example (CDK)</h1>
+        <h1 class="text-2xl text-center">Wallet Adapter Example (CDK)</h1>
       </header>
 
       <section>
-        <div>
+        <div class="my-4">
           <p>
             Wallet:
             {{ wallet !== null ? wallet.adapter.name : 'None' }}
           </p>
 
-          <p *ngIf="publicKey">
-            Public Key: {{ publicKey.toBase58() | hdObscureAddress }}
+          <p>
+            Public Key:
+            <span *ngIf="publicKey; else noWalletConnected">
+              {{ publicKey.toBase58() | hdObscureAddress }}
+            </span>
+            <ng-template #noWalletConnected> None </ng-template>
           </p>
 
-          <p>Status: {{ connected ? 'connected' : 'disconnected' }}</p>
+          <p>
+            Status:
+            <span
+              [ngClass]="{
+                'text-red-600': !connected,
+                'text-green-600': connected
+              }"
+            >
+              {{ connected ? 'Connected' : 'Disconnected' }}
+            </span>
+          </p>
         </div>
 
-        <fieldset
-          #selectWallet="hdSelectWallet"
-          (walletSelected)="onWalletSelected($event)"
-          hdSelectWallet
-        >
-          <legend>Select a wallet:</legend>
+        <div class="flex gap-4">
+          <button
+            #hdSelectAndConnectWallet="hdSelectAndConnectWallet"
+            *ngFor="let wallet of wallets; let i = index"
+            class="flex justify-center items-center gap-2 px-4 py-2 bg-violet-800 text-white rounded-md disabled:cursor-not-allowed"
+            [disabled]="connected || wallet === null"
+            (click)="hdSelectAndConnectWallet.run(wallet.adapter.name)"
+            (hdConnectWalletStarts)="onConnectWalletStarts()"
+            (hdConnectWalletError)="onConnectWalletError($event)"
+            (hdWalletConnected)="onWalletConnected()"
+            hdSelectAndConnectWallet
+          >
+            <span> Connect </span>
 
-          <div>
-            <input
-              id="select-wallet-empty"
-              [value]="null"
-              [ngModel]="wallet?.adapter?.name ?? null"
-              (ngModelChange)="selectWallet.run(null)"
-              type="radio"
-              name="walletName"
-            />
-            <label for="select-wallet-empty"> None </label>
-          </div>
+            <hd-wallet-icon [hdWallet]="wallet"></hd-wallet-icon>
+          </button>
 
-          <div *ngFor="let wallet of wallets; let i = index">
-            <input
-              [id]="'select-wallet-' + i"
-              [value]="wallet.adapter.name"
-              [ngModel]="wallet?.adapter?.name ?? null"
-              (ngModelChange)="selectWallet.run(wallet.adapter.name)"
-              type="radio"
-              name="walletName"
-            />
-            <label [for]="'select-wallet-' + i">
-              {{ wallet.adapter.name }}
-            </label>
-          </div>
-        </fieldset>
+          <button
+            #hdDisconnectWallet="hdDisconnectWallet"
+            *ngIf="wallet"
+            class="flex justify-center items-center gap-2 px-4 py-2 bg-red-400 rounded-md disabled:cursor-not-allowed"
+            [disabled]="!connected"
+            (click)="hdDisconnectWallet.run()"
+            (hdDisconnectWalletStarts)="onDisconnectWalletStarts()"
+            (hdDisconnectWalletError)="onDisconnectWalletError($event)"
+            (hdWalletDisconnected)="onWalletDisconnected()"
+            hdDisconnectWallet
+          >
+            <span> Disconnect </span>
 
-        <button
-          #connectWallet="hdConnectWallet"
-          [disabled]="connected || wallet === null"
-          (click)="connectWallet.run()"
-          (connectWalletStarts)="onConnectWalletStarts()"
-          (connectWalletError)="onConnectWalletError($event)"
-          (walletConnected)="onWalletConnected()"
-          hdConnectWallet
-        >
-          Connect
-        </button>
-        <button
-          #disconnectWallet="hdDisconnectWallet"
-          [disabled]="!connected"
-          (click)="disconnectWallet.run()"
-          (disconnectWalletStarts)="onDisconnectWalletStarts()"
-          (disconnectWalletError)="onDisconnectWalletError($event)"
-          (walletDisconnected)="onWalletDisconnected()"
-          hdDisconnectWallet
-        >
-          Disconnect
-        </button>
+            <hd-wallet-icon [hdWallet]="wallet"></hd-wallet-icon>
+          </button>
+        </div>
       </section>
     </main>
   `,
   imports: [
     NgIf,
     NgFor,
-    FormsModule,
-    HdConnectWalletDirective,
+    NgClass,
+    HdSelectAndConnectWalletDirective,
     HdDisconnectWalletDirective,
-    HdSelectWalletDirective,
     HdWalletAdapterDirective,
     HdObscureAddressPipe,
-  ],
-  providers: [
-    provideWalletAdapter({
-      autoConnect: false,
-      adapters: [new PhantomWalletAdapter(), new SolflareWalletAdapter()],
-    }),
+    HdWalletIconComponent,
   ],
 })
 export class AppComponent {
-  onWalletConnected() {
-    console.log('Wallet connected');
-  }
-
-  onConnectWalletStarts() {
-    console.log('Starting to connect wallet');
-  }
-
-  onConnectWalletError(error: unknown) {
-    console.error(error);
-  }
-
   onWalletDisconnected() {
     console.log('Wallet disconnected');
   }
@@ -660,10 +373,6 @@ export class AppComponent {
 
   onDisconnectWalletError(error: unknown) {
     console.error(error);
-  }
-
-  onWalletSelected(walletName: WalletName | null) {
-    console.log(`Wallet selected: ${walletName}`);
   }
 }
 ```
