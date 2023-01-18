@@ -15,7 +15,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import {
   HdDisconnectWalletDirective,
   HdObscureAddressPipe,
-  HdSelectWalletDirective,
+  HdSelectAndConnectWalletDirective,
   HdWalletAdapterDirective,
   HdWalletIconComponent,
 } from '@heavy-duty/wallet-adapter-cdk';
@@ -69,13 +69,13 @@ import { ButtonColor } from './types';
             Copy address
           </button>
           <button
-            #walletModalTrigger="hdWalletModalTrigger"
-            #hdSelectWallet="hdSelectWallet"
-            (click)="walletModalTrigger.open(wallets)"
-            (hdSelectWallet)="hdSelectWallet.run($event)"
+            #hdWalletModalTrigger="hdWalletModalTrigger"
+            #hdSelectAndConnectWallet="hdSelectAndConnectWallet"
+            (click)="hdWalletModalTrigger.open(wallets)"
+            (hdSelectWallet)="hdSelectAndConnectWallet.run($event)"
             mat-menu-item
             hdWalletModalTrigger
-            hdSelectWallet
+            hdSelectAndConnectWallet
             panelClass="mat-dialog"
           >
             <mat-icon>sync_alt</mat-icon>
@@ -122,7 +122,7 @@ import { ButtonColor } from './types';
     HdWalletIconComponent,
     HdWalletModalTriggerDirective,
     HdDisconnectWalletDirective,
-    HdSelectWalletDirective,
+    HdSelectAndConnectWalletDirective,
     HdObscureAddressPipe,
     HdWalletModalComponent,
     HdWalletModalButtonComponent,

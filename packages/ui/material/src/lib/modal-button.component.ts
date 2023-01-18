@@ -9,7 +9,7 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
 import {
-  HdSelectWalletDirective,
+  HdSelectAndConnectWalletDirective,
   HdWalletAdapterDirective,
   HdWalletIconComponent,
 } from '@heavy-duty/wallet-adapter-cdk';
@@ -24,14 +24,14 @@ import { ButtonColor } from './types';
   template: `
     <button
       #hdWalletModalTrigger="hdWalletModalTrigger"
-      #hdSelectWallet="hdSelectWallet"
+      #hdSelectAndConnectWallet="hdSelectAndConnectWallet"
       *hdWalletAdapter="let wallets = wallets"
       [color]="color"
       (click)="hdWalletModalTrigger.open(wallets)"
-      (hdSelectWallet)="hdSelectWallet.run($event)"
+      (hdSelectWallet)="hdSelectAndConnectWallet.run($event)"
       mat-raised-button
       hdWalletModalTrigger
-      hdSelectWallet
+      hdSelectAndConnectWallet
     >
       <ng-content></ng-content>
       <ng-container *ngIf="!children">Select Wallet</ng-container>
@@ -59,7 +59,7 @@ import { ButtonColor } from './types';
     HdWalletAdapterDirective,
     HdWalletIconComponent,
     HdWalletModalTriggerDirective,
-    HdSelectWalletDirective,
+    HdSelectAndConnectWalletDirective,
     HdWalletModalComponent,
   ],
 })
