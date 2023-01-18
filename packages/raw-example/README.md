@@ -10,7 +10,7 @@ By following this instructions you'll be able to set up the wallet-adapter into 
 ```
 "rxjs": "7.5.2",
 "@angular/core": "15.1.0",
-"@ngrx/component-store": "15.0.0",
+"@ngrx/component-store": "15.1.0",
 "@solana/web3.js": "1.73.0",
 "@solana/wallet-adapter-base": "0.9.20",
 "@solana/wallet-adapter-phantom": "0.9.19",
