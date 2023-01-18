@@ -1,3 +1,5 @@
+![Screenshot from 2023-01-18 17-16-36](https://user-images.githubusercontent.com/7496781/213252495-cddbff02-f030-41dc-88da-e03d0735fdbd.png)
+
 # CDK Example
 
 By following this instructions you'll be able to set up the wallet-adapter into an angular application using the headless UI package and tailwindcss.
