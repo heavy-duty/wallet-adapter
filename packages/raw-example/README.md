@@ -16,14 +16,6 @@ By following this instructions you'll be able to set up the wallet-adapter into 
 
 ## Installation
 
-### ng
-
-```
-$ ng add @heavy-duty/wallet-adapter
-```
-
-### npm
-
 ```
 $ npm install --save @heavy-duty/wallet-adapter
 ```
