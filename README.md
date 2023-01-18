@@ -1,3 +1,8 @@
+<p align="center">
+<img src="https://user-images.githubusercontent.com/7496781/213251275-69e098db-a8cf-4e14-ba75-4a1c11dbe2ca.svg" width="200" height="200" />
+</p>
+
+
 # @heavy-duty/wallet-adapter
 
 The official Angular library for integrating wallets from the Solana ecosystem.
@@ -21,6 +26,7 @@ import {
 @Component({
   standalone: true,
   selector: 'hd-root',
+
   template: `
     <main>
       <header>
@@ -87,3 +93,7 @@ export class AppComponent {
 - [Quickstart Material](/packages/material-example/README.md) - Let your users select a wallet and connect to it using Angular Material UI.
 
 NOTE: Using the material package is the easiest way to get started, but it's less customizable, instead if you want a custom experience use the CDK or the base library.
+
+## Authors
+
+Made with <3 by [Heavy Duty Builders](https://github.com/heavy-duty).
