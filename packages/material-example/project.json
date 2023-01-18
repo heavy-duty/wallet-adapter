@@ -6,7 +6,7 @@
   "prefix": "hd",
   "targets": {
     "build": {
-      "executor": "@nrwl/angular:webpack-browser",
+      "executor": "@angular-devkit/build-angular:browser",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/packages/material-example",
@@ -23,10 +23,7 @@
           "./node_modules/@angular/material/prebuilt-themes/purple-green.css",
           "packages/ui/material/src/style.css"
         ],
-        "scripts": [],
-        "customWebpackConfig": {
-          "path": "packages/material-example/webpack.config.js"
-        }
+        "scripts": []
       },
       "configurations": {
         "production": {
@@ -56,7 +53,7 @@
       "defaultConfiguration": "production"
     },
     "serve": {
-      "executor": "@nrwl/angular:webpack-dev-server",
+      "executor": "@angular-devkit/build-angular:dev-server",
       "configurations": {
         "production": {
           "browserTarget": "material-example:build:production"
