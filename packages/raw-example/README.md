@@ -1,3 +1,6 @@
+
+![Screenshot from 2023-01-18 17-17-24](https://user-images.githubusercontent.com/7496781/213252348-41b145b0-3630-4f88-862e-140f160a9c53.png)
+
 # Raw Example
 
 By following this instructions you'll be able to set up the wallet-adapter into an angular application without any of the UI packages available.
