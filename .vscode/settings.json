@@ -5,7 +5,8 @@
     "cdk-example",
     "material",
     "core",
-    "material-example"
+    "material-example",
+    "data-access"
   ],
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
