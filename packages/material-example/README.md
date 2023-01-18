@@ -1,3 +1,5 @@
+![Screenshot from 2023-01-18 17-17-53](https://user-images.githubusercontent.com/7496781/213252669-11daf2f3-008c-4251-8d09-2bc9cb84d744.png)
+
 # Material Example
 
 By following this instructions you'll be able to set up the wallet-adapter into an angular application using the material package.
