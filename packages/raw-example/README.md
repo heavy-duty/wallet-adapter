@@ -1,4 +1,4 @@
-![Screenshot from 2023-01-18 17-17-24](https://user-images.githubusercontent.com/7496781/213252348-41b145b0-3630-4f88-862e-140f160a9c53.png)
+![Screenshot from 2023-01-25 15-48-58](https://user-images.githubusercontent.com/7496781/214612294-403ad4e6-0eeb-4b04-8c3a-17e1defb085c.png)
 
 # Raw Example
 
