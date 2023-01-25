@@ -1,9 +1,12 @@
 import { NgClass, NgFor, NgIf } from '@angular/common';
 import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import {
   HdDisconnectWalletDirective,
+  HdEncodeTextPipe,
   HdObscureAddressPipe,
   HdSelectAndConnectWalletDirective,
+  HdSignMessageDirective,
   HdWalletAdapterDirective,
   HdWalletIconComponent,
 } from '@heavy-duty/wallet-adapter-cdk';
@@ -34,7 +37,7 @@ import {
 
           <p>
             Public Key:
-            <span *ngIf="publicKey; else noWalletConnected">
+            <span *ngIf="publicKey !== null; else noWalletConnected">
               {{ publicKey.toBase58() | hdObscureAddress }}
             </span>
             <ng-template #noWalletConnected> None </ng-template>
@@ -51,6 +54,34 @@ import {
               {{ connected ? 'Connected' : 'Disconnected' }}
             </span>
           </p>
+
+          <div *ngIf="publicKey !== null">
+            <p>Sign a Message</p>
+            <form
+              #hdSignMessage="hdSignMessage"
+              *ngIf="message | hdEncodeText as encodedMessage"
+              (ngSubmit)="hdSignMessage.run(encodedMessage)"
+              (hdSignMessageStarts)="onSignMessageStarts()"
+              (hdSignMessageError)="onSignMessageError($event)"
+              (hdMessageSigned)="onMessageSigned($event)"
+              hdSignMessage
+            >
+              <label class="mr-2" for="message-form-content">Message: </label>
+              <input
+                id="message-form-content"
+                class="px-2 py-1 border-2 border-black rounded-md mr-2"
+                [(ngModel)]="message"
+                type="text"
+                name="content"
+              />
+              <button
+                class="px-4 py-2 bg-violet-800 text-white rounded-md disabled:cursor-not-allowed"
+                type="submit"
+              >
+                Sign
+              </button>
+            </form>
+          </div>
         </div>
 
         <div class="flex gap-4">
@@ -93,14 +124,19 @@ import {
     NgIf,
     NgFor,
     NgClass,
+    FormsModule,
     HdSelectAndConnectWalletDirective,
     HdDisconnectWalletDirective,
     HdWalletAdapterDirective,
     HdObscureAddressPipe,
     HdWalletIconComponent,
+    HdSignMessageDirective,
+    HdEncodeTextPipe,
   ],
 })
 export class AppComponent {
+  message = '';
+
   onWalletConnected() {
     console.log('Wallet connected');
   }
@@ -122,6 +158,18 @@ export class AppComponent {
   }
 
   onDisconnectWalletError(error: unknown) {
+    console.error(error);
+  }
+
+  onMessageSigned(signature: Uint8Array) {
+    console.log('Message signed', signature);
+  }
+
+  onSignMessageStarts() {
+    console.log('Starting to sign message');
+  }
+
+  onSignMessageError(error: unknown) {
     console.error(error);
   }
 }

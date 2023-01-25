@@ -24,6 +24,8 @@ The minor version will be incremented upon a breaking change and the patch versi
 - material: add `HdWalletModalTriggerDirective` to give HTML elements the ability to open the material select wallet modal.
 - cdk-example: create a cdk example app and added instructions on how to get there in the README.
 - material-example: create a material example app and added instructions on how to get there in the README.
+- cdk: add `HdSignMessageDirective` to give HTML elements the ability to sign an encoded message.
+- cdk: add `HdEncodeTextPipe` to transform a string into a Uint8Array.
 
 ### Breaking changes
 

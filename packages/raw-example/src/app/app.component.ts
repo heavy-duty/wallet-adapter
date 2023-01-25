@@ -30,6 +30,26 @@ import { WalletName } from '@solana/wallet-adapter-base';
           <p>
             Status: {{ (connected$ | async) ? 'connected' : 'disconnected' }}
           </p>
+
+          <div *ngIf="publicKey$ | async as publicKey">
+            <label class="mr-2" for="message-form-content"
+              >Sign Message:
+            </label>
+            <input
+              id="message-form-content"
+              class="px-2 py-1 border-2 border-black rounded-md mr-2"
+              [formControl]="messageControl"
+              type="text"
+              name="content"
+            />
+            <button
+              class="px-4 py-2 bg-violet-800 text-white rounded-md disabled:cursor-not-allowed"
+              (click)="onSignMessage()"
+              type="submit"
+            >
+              Sign
+            </button>
+          </div>
         </div>
 
         <fieldset>
@@ -85,6 +105,9 @@ export class AppComponent implements OnInit {
     null,
     [Validators.required]
   );
+  readonly messageControl = this._formBuilder.control<string>('', {
+    nonNullable: true,
+  });
 
   readonly connected$ = this._walletStore.connected$;
   readonly publicKey$ = this._walletStore.publicKey$;
@@ -120,5 +143,20 @@ export class AppComponent implements OnInit {
       next: () => console.log('Wallet disconnected'),
       error: (error) => console.error(error),
     });
+  }
+
+  onSignMessage() {
+    const message = this.messageControl.getRawValue();
+    const encodedMessage = new TextEncoder().encode(message);
+    const signMessage$ = this._walletStore.signMessage(encodedMessage);
+
+    if (!signMessage$) {
+      console.error('Wallet is not capable of message signing.');
+    } else {
+      signMessage$.subscribe({
+        next: (signature) => console.log('Message signed', signature),
+        error: (error) => console.error(error),
+      });
+    }
   }
 }
