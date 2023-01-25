@@ -1,4 +1,4 @@
-![Screenshot from 2023-01-18 17-16-36](https://user-images.githubusercontent.com/7496781/213252495-cddbff02-f030-41dc-88da-e03d0735fdbd.png)
+![Screenshot from 2023-01-25 15-49-34](https://user-images.githubusercontent.com/7496781/214612489-be71f044-d5a4-4861-a4f8-0ff24cf36c5f.png)
 
 # CDK Example
 
