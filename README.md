@@ -2,7 +2,6 @@
 <img src="https://user-images.githubusercontent.com/7496781/213251275-69e098db-a8cf-4e14-ba75-4a1c11dbe2ca.svg" width="200" height="200" />
 </p>
 
-
 # @heavy-duty/wallet-adapter
 
 The official Angular library for integrating wallets from the Solana ecosystem.
@@ -79,7 +78,9 @@ export class AppComponent {
 
 | Angular | @heavy-duty/wallet-adapter |
 | ------- | -------------------------- |
-| 15      | ^0.5, ^0.6                 |
+| 15.2.4  | ^0.7                       |
+| 15.1.0  | ^0.6                       |
+| 15.0.0  | ^0.5                       |
 | 14      | ^0.4                       |
 | 13      | ^0.3                       |
 | 12      | ^0.2                       |
