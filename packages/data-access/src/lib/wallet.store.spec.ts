@@ -1,3 +1,4 @@
+import { AnchorProvider } from '@coral-xyz/anchor';
 import {
   Connection,
   Keypair,
@@ -255,6 +256,33 @@ describe('WalletStore', () => {
     const spy = jest.spyOn(adapter, 'sendTransaction');
     walletStore.sendTransaction(transaction, connection).subscribe(() => {
       expect(spy).toHaveBeenCalledWith(transaction, connection, undefined);
+      done();
+    });
+  });
+
+  it('should create anchor provider from anchor wallet', (done) => {
+    const walletStore = new WalletStore({
+      adapters: [adapter],
+      autoConnect: false,
+      localStorageKey: '',
+    });
+
+    walletStore.selectWallet(PhantomWalletName);
+    walletStore.connect().subscribe();
+
+    walletStore.anchorWallet$.subscribe((anchorWallet) => {
+      expect(anchorWallet).toBeDefined();
+
+      if (anchorWallet !== undefined) {
+        const provider = new AnchorProvider(
+          connection,
+          anchorWallet,
+          AnchorProvider.defaultOptions()
+        );
+
+        expect(provider).toBeDefined();
+      }
+
       done();
     });
   });

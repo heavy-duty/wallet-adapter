@@ -123,26 +123,28 @@ export class WalletStore extends ComponentStore<WalletState> {
     this._adapter$,
     this.connected$,
     (publicKey, adapter, connected) => {
-      const adapterSignTransaction =
-        adapter && 'signTransaction' in adapter
-          ? signTransaction(adapter, connected, (error) =>
-              this._setError(error)
-            )
-          : undefined;
-      const adapterSignAllTransactions =
-        adapter && 'signAllTransactions' in adapter
-          ? signAllTransactions(adapter, connected, (error) =>
-              this._setError(error)
-            )
-          : undefined;
-
-      return publicKey && adapterSignTransaction && adapterSignAllTransactions
+      return publicKey &&
+        adapter &&
+        'signTransaction' in adapter &&
+        'signAllTransactions' in adapter
         ? {
             publicKey,
-            signTransaction: (transaction: Transaction) =>
-              firstValueFrom(adapterSignTransaction(transaction)),
-            signAllTransactions: (transactions: Transaction[]) =>
-              firstValueFrom(adapterSignAllTransactions(transactions)),
+            signTransaction: <T extends Transaction | VersionedTransaction>(
+              transaction: T
+            ): Promise<T> =>
+              firstValueFrom(
+                signTransaction<T>(adapter, connected, (error) =>
+                  this._setError(error)
+                )(transaction)
+              ),
+            signAllTransactions: <T extends Transaction | VersionedTransaction>(
+              transactions: T[]
+            ): Promise<T[]> =>
+              firstValueFrom(
+                signAllTransactions<T>(adapter, connected, (error) =>
+                  this._setError(error)
+                )(transactions)
+              ),
           }
         : undefined;
     },
