@@ -1,11 +1,31 @@
 import {
   MessageSignerWalletAdapter,
   SignerWalletAdapter,
+  TransactionOrVersionedTransaction,
+  WalletAdapterProps,
   WalletError,
   WalletNotConnectedError,
 } from '@solana/wallet-adapter-base';
-import { Transaction } from '@solana/web3.js';
-import { defer, from, Observable, throwError } from 'rxjs';
+import { Transaction, VersionedTransaction } from '@solana/web3.js';
+import { Observable, defer, from, throwError } from 'rxjs';
+
+export interface SignerWalletAdapterProps<Name extends string = string>
+  extends WalletAdapterProps<Name> {
+  signTransaction<
+    T extends TransactionOrVersionedTransaction<
+      this['supportedTransactionVersions']
+    >
+  >(
+    transaction: T
+  ): Observable<T>;
+  signAllTransactions<
+    T extends TransactionOrVersionedTransaction<
+      this['supportedTransactionVersions']
+    >
+  >(
+    transactions: T[]
+  ): Observable<T[]>;
+}
 
 export const signMessage = (
   adapter: MessageSignerWalletAdapter,
@@ -21,12 +41,12 @@ export const signMessage = (
   };
 };
 
-export const signTransaction = (
+export const signTransaction = <T extends Transaction | VersionedTransaction>(
   adapter: SignerWalletAdapter,
   connected: boolean,
   errorHandler: (error: WalletError) => unknown
-): ((transaction: Transaction) => Observable<Transaction>) => {
-  return (transaction: Transaction) => {
+): ((transaction: T) => Observable<T>) => {
+  return (transaction: T) => {
     if (!connected) {
       return throwError(() => errorHandler(new WalletNotConnectedError()));
     }
@@ -35,12 +55,14 @@ export const signTransaction = (
   };
 };
 
-export const signAllTransactions = (
+export const signAllTransactions = <
+  T extends Transaction | VersionedTransaction
+>(
   adapter: SignerWalletAdapter,
   connected: boolean,
   errorHandler: (error: WalletError) => unknown
-): ((transactions: Transaction[]) => Observable<Transaction[]>) => {
-  return (transactions: Transaction[]) => {
+): ((transactions: T[]) => Observable<T[]>) => {
+  return (transactions: T[]) => {
     if (!connected) {
       return throwError(() => errorHandler(new WalletNotConnectedError()));
     }
