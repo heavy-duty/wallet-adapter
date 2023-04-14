@@ -14,13 +14,15 @@ import {
   PublicKey,
   Transaction,
   TransactionSignature,
+  VersionedTransaction,
 } from '@solana/web3.js';
 import {
+  EMPTY,
+  Observable,
   catchError,
   combineLatest,
   concatMap,
   defer,
-  EMPTY,
   filter,
   finalize,
   first,
@@ -28,7 +30,6 @@ import {
   from,
   fromEvent,
   merge,
-  Observable,
   of,
   pairwise,
   switchMap,
@@ -37,13 +38,14 @@ import {
   withLatestFrom,
 } from 'rxjs';
 import {
+  LocalStorageSubject,
+  SignerWalletAdapterProps,
+  WalletNotSelectedError,
   fromAdapterEvent,
   handleEvent,
-  LocalStorageSubject,
   signAllTransactions,
   signMessage,
   signTransaction,
-  WalletNotSelectedError,
 } from './internals';
 
 export interface Wallet {
@@ -419,8 +421,8 @@ export class WalletStore extends ComponentStore<WalletState> {
   }
 
   // Send a transaction using the provided connection
-  sendTransaction(
-    transaction: Transaction,
+  sendTransaction<T extends Transaction | VersionedTransaction>(
+    transaction: T,
     connection: Connection,
     options?: SendTransactionOptions
   ): Observable<TransactionSignature> {
@@ -447,9 +449,9 @@ export class WalletStore extends ComponentStore<WalletState> {
   }
 
   // Sign a transaction if the wallet supports it
-  signTransaction(
-    transaction: Transaction
-  ): Observable<Transaction> | undefined {
+  signTransaction<T extends Transaction | VersionedTransaction>(
+    transaction: T
+  ): ReturnType<SignerWalletAdapterProps['signTransaction']> | undefined {
     const { adapter, connected } = this.get();
 
     return adapter && 'signTransaction' in adapter
@@ -460,9 +462,9 @@ export class WalletStore extends ComponentStore<WalletState> {
   }
 
   // Sign multiple transactions if the wallet supports it
-  signAllTransactions(
-    transactions: Transaction[]
-  ): Observable<Transaction[]> | undefined {
+  signAllTransactions<T extends Transaction | VersionedTransaction>(
+    transactions: T[]
+  ): ReturnType<SignerWalletAdapterProps['signAllTransactions']> | undefined {
     const { adapter, connected } = this.get();
 
     return adapter && 'signAllTransactions' in adapter
