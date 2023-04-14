@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import type {
   SendTransactionOptions,
   WalletName,
@@ -136,7 +138,7 @@ export class PhantomWalletAdapter extends BaseMessageSignerWalletAdapter {
     }
   }
 
-  async signMessage(message: Uint8Array): Promise<Uint8Array> {
+  async signMessage(_message: Uint8Array): Promise<Uint8Array> {
     try {
       const publicKey = this._publicKey;
       if (!publicKey) throw new WalletNotConnectedError();
