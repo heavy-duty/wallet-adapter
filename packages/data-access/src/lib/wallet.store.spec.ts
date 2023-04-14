@@ -18,6 +18,37 @@ describe('WalletStore', () => {
   const adapter = new PhantomWalletAdapter();
   const connection = new Connection('http://localhost:8899');
 
+  it('should be able to connect wallet', () => {
+    const walletStore = new WalletStore({
+      adapters: [adapter],
+      autoConnect: false,
+      localStorageKey: '',
+    });
+
+    walletStore.selectWallet(PhantomWalletName);
+    walletStore.connect().subscribe();
+
+    walletStore.connected$.subscribe((connected) => {
+      expect(connected).toBe(true);
+    });
+  });
+
+  it('should be able to disconnect wallet', () => {
+    const walletStore = new WalletStore({
+      adapters: [adapter],
+      autoConnect: false,
+      localStorageKey: '',
+    });
+
+    walletStore.selectWallet(PhantomWalletName);
+    walletStore.connect().subscribe();
+    walletStore.disconnect().subscribe();
+
+    walletStore.connected$.subscribe((connected) => {
+      expect(connected).toBe(false);
+    });
+  });
+
   it('should sign message', (done) => {
     const walletStore = new WalletStore({
       adapters: [adapter],
