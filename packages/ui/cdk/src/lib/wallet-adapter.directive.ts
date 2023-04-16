@@ -5,7 +5,7 @@ import {
   TemplateRef,
   ViewContainerRef,
 } from '@angular/core';
-import { Wallet, WalletStore } from '@heavy-duty/wallet-adapter';
+import { AnchorWallet, Wallet, WalletStore } from '@heavy-duty/wallet-adapter';
 import { ComponentStore } from '@ngrx/component-store';
 import { PublicKey } from '@solana/web3.js';
 import { tap } from 'rxjs';
@@ -13,6 +13,7 @@ import { tap } from 'rxjs';
 export class HdWalletAdapterContext {
   public $implicit!: unknown;
   public wallet!: Wallet | null;
+  public anchorWallet!: AnchorWallet | null;
   public connected!: boolean;
   public connecting!: boolean;
   public disconnecting!: boolean;
@@ -25,6 +26,7 @@ interface Changes {
   connecting: boolean;
   disconnecting: boolean;
   wallet: Wallet | null;
+  anchorWallet: AnchorWallet | null;
   publicKey: PublicKey | null;
   wallets: Wallet[];
 }
@@ -46,13 +48,23 @@ export class HdWalletAdapterDirective extends ComponentStore<object> {
     this._walletStore.wallet$,
     this._walletStore.publicKey$,
     this._walletStore.wallets$,
-    (connected, connecting, disconnecting, wallet, publicKey, wallets) => ({
+    this._walletStore.anchorWallet$,
+    (
       connected,
       connecting,
       disconnecting,
       wallet,
       publicKey,
       wallets,
+      anchorWallet
+    ) => ({
+      connected,
+      connecting,
+      disconnecting,
+      wallet,
+      publicKey,
+      wallets,
+      anchorWallet: anchorWallet ?? null,
     })
   );
 
@@ -71,6 +83,7 @@ export class HdWalletAdapterDirective extends ComponentStore<object> {
         wallet,
         publicKey,
         wallets,
+        anchorWallet,
       }) => {
         this._context.connected = connected;
         this._context.connecting = connecting;
@@ -78,6 +91,7 @@ export class HdWalletAdapterDirective extends ComponentStore<object> {
         this._context.wallet = wallet;
         this._context.publicKey = publicKey;
         this._context.wallets = wallets;
+        this._context.anchorWallet = anchorWallet;
         this._changeDetectionRef.markForCheck();
       }
     )

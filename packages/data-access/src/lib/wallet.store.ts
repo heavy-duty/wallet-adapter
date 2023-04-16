@@ -53,6 +53,16 @@ export interface Wallet {
   readyState: WalletReadyState;
 }
 
+export interface AnchorWallet {
+  publicKey: PublicKey;
+  signTransaction<T extends Transaction | VersionedTransaction>(
+    transaction: T
+  ): Promise<T>;
+  signAllTransactions<T extends Transaction | VersionedTransaction>(
+    transactions: T[]
+  ): Promise<T[]>;
+}
+
 export interface WalletConfig {
   localStorageKey: string;
   autoConnect: boolean;
@@ -127,7 +137,7 @@ export class WalletStore extends ComponentStore<WalletState> {
         adapter &&
         'signTransaction' in adapter &&
         'signAllTransactions' in adapter
-        ? {
+        ? ({
             publicKey,
             signTransaction: <T extends Transaction | VersionedTransaction>(
               transaction: T
@@ -145,7 +155,7 @@ export class WalletStore extends ComponentStore<WalletState> {
                   this._setError(error)
                 )(transactions)
               ),
-          }
+          } as AnchorWallet)
         : undefined;
     },
     { debounce: true }
