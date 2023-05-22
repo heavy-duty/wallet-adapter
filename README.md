@@ -98,3 +98,5 @@ NOTE: Using the material package is the easiest way to get started, but it's les
 ## Authors
 
 Made with <3 by [Heavy Duty Builders](https://github.com/heavy-duty).
+
+Define a hashtag that can be used by heavy duty builders, when they do, the tweet is shared in a discord channel so we all get to see it even if twitter is not showing it to you. That way we can all empower each others growth. Incentivize comments, shares and how that matters to our growth. Keep track of interactions of these tweets and use them to give weekly/monthly rewards to the best ones.
