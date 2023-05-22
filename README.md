@@ -78,6 +78,7 @@ export class AppComponent {
 
 | Angular | @heavy-duty/wallet-adapter |
 | ------- | -------------------------- |
+| 16.0.2  | 0.7.0                      |
 | 15.2.4  | 0.6.4                      |
 | 15.1.0  | 0.6.0                      |
 | 15.0.0  | ^0.5                       |
@@ -86,6 +87,28 @@ export class AppComponent {
 | 12      | ^0.2                       |
 
 <sub>Version combinations not documented here **may** work but are untested.</sub>
+
+## Testing
+
+There's only a test suite for the logical layer of the wallet-adapter, also known as `data-access`. In order to run the tests just execute `nx test data-access` from the root folder.
+
+NOTE: You'll need nx installed globally.
+
+## Building
+
+The three main packages `data-access`, `ui-cdk` and `ui-material` are publishable libraries. Each can be built with the following commands:
+
+```bash
+nx build data-access
+```
+
+```bash
+nx build ui-cdk
+```
+
+```bash
+nx build ui-material
+```
 
 ## Resources
 
