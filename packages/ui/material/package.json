@@ -1,6 +1,6 @@
 {
   "name": "@heavy-duty/wallet-adapter-material",
-  "version": "0.6.4",
+  "version": "0.7.0-beta.1",
   "peerDependencies": {},
   "dependencies": {
     "tslib": "^2.3.0"

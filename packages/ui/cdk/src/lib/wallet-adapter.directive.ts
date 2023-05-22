@@ -12,13 +12,13 @@ import { tap } from 'rxjs';
 
 export class HdWalletAdapterContext {
   public $implicit!: unknown;
-  public wallet!: Wallet | null;
-  public anchorWallet!: AnchorWallet | null;
-  public connected!: boolean;
-  public connecting!: boolean;
-  public disconnecting!: boolean;
-  public publicKey!: PublicKey | null;
-  public wallets!: Wallet[];
+  public wallet: Wallet | null = null;
+  public anchorWallet: AnchorWallet | null = null;
+  public connected = false;
+  public connecting = false;
+  public disconnecting = false;
+  public publicKey: PublicKey | null = null;
+  public wallets: Wallet[] = [];
 }
 
 interface Changes {

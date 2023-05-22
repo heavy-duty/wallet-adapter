@@ -1,4 +1,3 @@
-import { AnchorProvider } from '@coral-xyz/anchor';
 import {
   Connection,
   Keypair,
@@ -303,16 +302,6 @@ describe('WalletStore', () => {
 
     walletStore.anchorWallet$.subscribe((anchorWallet) => {
       expect(anchorWallet).toBeDefined();
-
-      if (anchorWallet !== undefined) {
-        const provider = new AnchorProvider(
-          connection,
-          anchorWallet,
-          AnchorProvider.defaultOptions()
-        );
-
-        expect(provider).toBeDefined();
-      }
 
       done();
     });
