@@ -162,7 +162,7 @@ export class AppComponent {
   }
 
   onMessageSigned(signature: Uint8Array) {
-    console.log('Message signed', signature);
+    console.log('Message signed', Buffer.from(signature).toString('base64'));
   }
 
   onSignMessageStarts() {

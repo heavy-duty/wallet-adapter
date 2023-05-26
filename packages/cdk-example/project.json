@@ -12,7 +12,7 @@
         "outputPath": "dist/packages/cdk-example",
         "index": "packages/cdk-example/src/index.html",
         "main": "packages/cdk-example/src/main.ts",
-        "polyfills": ["zone.js"],
+        "polyfills": ["zone.js", "packages/cdk-example/src/polyfills.ts"],
         "tsConfig": "packages/cdk-example/tsconfig.app.json",
         "assets": [
           "packages/cdk-example/src/favicon.ico",
