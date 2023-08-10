@@ -78,6 +78,7 @@ export class AppComponent {
 
 | Angular | @heavy-duty/wallet-adapter |
 | ------- | -------------------------- |
+| 16.1.5  | 0.7.1                      |
 | 16.0.2  | 0.7.0                      |
 | 15.2.4  | 0.6.4                      |
 | 15.1.0  | 0.6.0                      |
