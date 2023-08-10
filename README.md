@@ -76,16 +76,17 @@ export class AppComponent {
 
 @heavy-duty/wallet-adapter doesn't follow Angular's versioning as @solana/wallet-adapter also has breaking changes throughout the year. Instead we try to maintain compatibility with both @solana/wallet-adapter and Angular majors for as long as possible, only breaking when we need to support a new major of one or the other.
 
-| Angular | @heavy-duty/wallet-adapter |
-| ------- | -------------------------- |
-| 16.1.5  | 0.7.1                      |
-| 16.0.2  | 0.7.0                      |
-| 15.2.4  | 0.6.4                      |
-| 15.1.0  | 0.6.0                      |
-| 15.0.0  | ^0.5                       |
-| 14      | ^0.4                       |
-| 13      | ^0.3                       |
-| 12      | ^0.2                       |
+| Angular | @solana/web3.js | @heavy-duty/wallet-adapter |
+| ------- | --------------- | -------------------------- |
+| 16.1.5  | 1.78.3          | 0.7.2                      |
+| 16.1.5  | 1.78.0          | 0.7.1                      |
+| 16.0.2  | -               | 0.7.0                      |
+| 15.2.4  | -               | 0.6.4                      |
+| 15.1.0  | -               | 0.6.0                      |
+| 15.0.0  | -               | ^0.5                       |
+| 14      | -               | ^0.4                       |
+| 13      | -               | ^0.3                       |
+| 12      | -               | ^0.2                       |
 
 <sub>Version combinations not documented here **may** work but are untested.</sub>
 
