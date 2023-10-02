@@ -2,13 +2,13 @@ import { ModuleWithProviders, NgModule, Provider } from '@angular/core';
 import { provideComponentStore } from '@ngrx/component-store';
 import { ConnectionConfig } from '@solana/web3.js';
 import {
-  connectionConfigProviderFactory,
   ConnectionStore,
+  connectionConfigProviderFactory,
 } from './connection.store';
 import {
   WalletConfig,
-  walletConfigProviderFactory,
   WalletStore,
+  walletConfigProviderFactory,
 } from './wallet.store';
 
 export function provideWalletAdapter(
@@ -19,6 +19,7 @@ export function provideWalletAdapter(
     walletConfigProviderFactory(walletConfig),
     connectionConfigProviderFactory(connectionConfig),
     provideComponentStore(WalletStore),
+    provideComponentStore(ConnectionStore),
   ];
 }
 
