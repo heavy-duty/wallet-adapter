@@ -52,10 +52,10 @@
       "executor": "@angular-devkit/build-angular:dev-server",
       "configurations": {
         "production": {
-          "browserTarget": "cdk-example:build:production"
+          "buildTarget": "cdk-example:build:production"
         },
         "development": {
-          "browserTarget": "cdk-example:build:development"
+          "buildTarget": "cdk-example:build:development"
         }
       },
       "defaultConfiguration": "development"
@@ -63,25 +63,18 @@
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
       "options": {
-        "browserTarget": "cdk-example:build"
+        "buildTarget": "cdk-example:build"
       }
     },
     "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": [
-          "packages/cdk-example/**/*.ts",
-          "packages/cdk-example/**/*.html"
-        ]
-      }
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
     },
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "packages/cdk-example/jest.config.ts",
-        "passWithNoTests": true
+        "jestConfig": "packages/cdk-example/jest.config.ts"
       }
     }
   },

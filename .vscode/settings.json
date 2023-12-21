@@ -11,7 +11,7 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.organizeImports": true
+    "source.organizeImports": "explicit"
   },
   "editor.tabSize": 2,
   "workbench.colorCustomizations": {
@@ -33,5 +33,6 @@
     "titleBar.inactiveBackground": "#e6249499",
     "titleBar.inactiveForeground": "#e7e7e799"
   },
-  "peacock.color": "#e62494"
+  "peacock.color": "#e62494",
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
