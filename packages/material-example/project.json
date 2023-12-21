@@ -56,10 +56,10 @@
       "executor": "@angular-devkit/build-angular:dev-server",
       "configurations": {
         "production": {
-          "browserTarget": "material-example:build:production"
+          "buildTarget": "material-example:build:production"
         },
         "development": {
-          "browserTarget": "material-example:build:development"
+          "buildTarget": "material-example:build:development"
         }
       },
       "defaultConfiguration": "development"
@@ -67,25 +67,18 @@
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
       "options": {
-        "browserTarget": "material-example:build"
+        "buildTarget": "material-example:build"
       }
     },
     "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": [
-          "packages/material-example/**/*.ts",
-          "packages/material-example/**/*.html"
-        ]
-      }
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
     },
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "packages/material-example/jest.config.ts",
-        "passWithNoTests": true
+        "jestConfig": "packages/material-example/jest.config.ts"
       }
     }
   },
