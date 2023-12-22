@@ -7,13 +7,11 @@ By following this instructions you'll be able to set up the wallet-adapter into 
 ## Pre-requisites
 
 ```
-"rxjs": "7.5.2",
-"@angular/core": "15.1.0",
-"@ngrx/component-store": "15.1.0",
-"@solana/web3.js": "1.73.0",
-"@solana/wallet-adapter-base": "0.9.20",
-"@solana/wallet-adapter-phantom": "0.9.19",
-"@solana/wallet-adapter-solflare": "0.6.21",
+"rxjs": "~7.8.0",
+"@angular/core": "^17.0.0",
+"@ngrx/component-store": "^17.0.1",
+"@solana/web3.js": "1.87.6",
+"@solana/wallet-adapter-base": "0.9.23",
 ```
 
 ## Installation
@@ -35,7 +33,7 @@ For Angular applications using modules:
   ],
   imports: [
     ... ,
-    HdWalletAdapterModule.forRoot({ autoConnect: true })
+    HdWalletAdapterModule.forRoot()
   ],
   providers: [
   	...
@@ -51,17 +49,10 @@ For Angular applications using standalone:
 ```ts
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideWalletAdapter } from '@heavy-duty/wallet-adapter';
-import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom';
-import { SolflareWalletAdapter } from '@solana/wallet-adapter-solflare';
 import { AppComponent } from './app/app.component';
 
 bootstrapApplication(AppComponent, {
-  providers: [
-    provideWalletAdapter({
-      autoConnect: false,
-      adapters: [new PhantomWalletAdapter(), new SolflareWalletAdapter()],
-    }),
-  ],
+  providers: [provideWalletAdapter()],
 }).catch((err) => console.error(err));
 ```
 
