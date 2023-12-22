@@ -1,9 +1,17 @@
 {
   "name": "@heavy-duty/wallet-adapter-material",
-  "version": "0.7.3",
+  "version": "0.8.0-beta.0",
   "peerDependencies": {},
   "dependencies": {
-    "tslib": "^2.3.0"
+    "rxjs": "~7.8.0",
+    "@angular/core": "^17.0.0",
+    "@angular/common": "^17.0.0",
+    "@angular/cdk": "^17.0.0",
+    "@angular/material": "^17.0.0",
+    "@ngrx/component-store": "^17.0.0",
+    "@solana/wallet-adapter-base": "^0.9.23",
+    "@heavy-duty/wallet-adapter": "0.8.0-beta.0",
+    "@heavy-duty/wallet-adapter-cdk": "0.8.0-beta.0"
   },
   "sideEffects": false
 }

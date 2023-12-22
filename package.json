@@ -14,6 +14,7 @@
     "@angular/cli": "~17.0.0",
     "@angular/compiler-cli": "17.0.8",
     "@angular/language-service": "17.0.8",
+    "@nrwl/webpack": "^17.2.7",
     "@nx/angular": "17.2.6",
     "@nx/eslint": "17.2.6",
     "@nx/eslint-plugin": "17.2.6",

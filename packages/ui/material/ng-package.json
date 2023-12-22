@@ -3,5 +3,6 @@
   "dest": "../../../dist/packages/ui/material",
   "lib": {
     "entryFile": "src/index.ts"
-  }
+  },
+  "allowedNonPeerDependencies": ["."]
 }

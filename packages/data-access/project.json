@@ -9,9 +9,9 @@
       "executor": "@nx/angular:package",
       "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
       "options": {
-        "project": "packages/data-access/ng-package.json",
-        "updateBuildableProjectDepsInPackageJson": true
+        "project": "packages/data-access/ng-package.json"
       },
+
       "configurations": {
         "production": {
           "tsConfig": "packages/data-access/tsconfig.lib.prod.json"
@@ -31,7 +31,15 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "packages/data-access/**/*.ts",
+          "packages/data-access/**/*.html",
+          "packages/data-access/package.json",
+          "packages/data-access/project.json"
+        ]
+      }
     }
   },
   "tags": []

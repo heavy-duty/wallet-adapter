@@ -9,8 +9,7 @@
       "executor": "@nx/angular:package",
       "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
       "options": {
-        "project": "packages/ui/cdk/ng-package.json",
-        "updateBuildableProjectDepsInPackageJson": true
+        "project": "packages/ui/cdk/ng-package.json"
       },
       "configurations": {
         "production": {
@@ -31,7 +30,15 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "packages/ui/cdk/**/*.ts",
+          "packages/ui/cdk/**/*.html",
+          "packages/ui/cdk/package.json",
+          "packages/ui/cdk/project.json"
+        ]
+      }
     }
   },
   "tags": []

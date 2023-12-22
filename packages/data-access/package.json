@@ -1,9 +1,18 @@
 {
   "name": "@heavy-duty/wallet-adapter",
-  "version": "0.7.3",
+  "version": "0.8.0-beta.0",
   "peerDependencies": {},
   "dependencies": {
-    "tslib": "^2.3.0"
+    "@angular/core": "^17.0.0",
+    "@ngrx/component-store": "^17.0.0",
+    "@wallet-standard/app": "^1.0.1",
+    "@wallet-standard/base": "^1.0.1",
+    "@solana/web3.js": "^1.87.6",
+    "@solana/wallet-adapter-base": "^0.9.23",
+    "@solana/wallet-standard-features": "^1.1.0",
+    "@solana/wallet-standard-wallet-adapter-base": "^1.1.1",
+    "@solana-mobile/wallet-adapter-mobile": "^2.0.1",
+    "rxjs": "~7.8.0"
   },
   "sideEffects": false
 }
