@@ -15,6 +15,7 @@
     "@angular/compiler-cli": "17.0.8",
     "@angular/language-service": "17.0.8",
     "@nx/angular": "17.2.6",
+    "@nx/eslint": "17.2.6",
     "@nx/eslint-plugin": "17.2.6",
     "@nx/jest": "17.2.6",
     "@schematics/angular": "17.0.7",
@@ -38,8 +39,7 @@
     "tailwindcss": "^3.0.2",
     "ts-jest": "29.1.0",
     "ts-node": "10.9.1",
-    "typescript": "5.2.2",
-    "@nx/eslint": "17.2.6"
+    "typescript": "5.2.2"
   },
   "workspaces": [
     "packages/*"
@@ -56,10 +56,13 @@
     "@angular/platform-browser-dynamic": "17.0.8",
     "@angular/router": "17.0.8",
     "@ngrx/component-store": "17.0.1",
+    "@solana-mobile/wallet-adapter-mobile": "^2.0.1",
     "@solana/wallet-adapter-base": "0.9.23",
-    "@solana/wallet-adapter-phantom": "0.9.22",
-    "@solana/wallet-adapter-solflare": "0.6.24",
+    "@solana/wallet-standard-features": "^1.1.0",
+    "@solana/wallet-standard-wallet-adapter-base": "^1.1.1",
     "@solana/web3.js": "1.87.6",
+    "@wallet-standard/app": "^1.0.1",
+    "@wallet-standard/base": "^1.0.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "0.14.2"

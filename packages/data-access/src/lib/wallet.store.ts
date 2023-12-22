@@ -1,6 +1,13 @@
 import { Inject, Injectable, InjectionToken } from '@angular/core';
 import { ComponentStore } from '@ngrx/component-store';
 import {
+  SolanaMobileWalletAdapter,
+  SolanaMobileWalletAdapterWalletName,
+  createDefaultAddressSelector,
+  createDefaultAuthorizationResultCache,
+  createDefaultWalletNotFoundHandler,
+} from '@solana-mobile/wallet-adapter-mobile';
+import {
   Adapter,
   SendTransactionOptions,
   WalletError,
@@ -9,6 +16,10 @@ import {
   WalletNotReadyError,
   WalletReadyState,
 } from '@solana/wallet-adapter-base';
+import {
+  SolanaSignInInput,
+  SolanaSignInOutput,
+} from '@solana/wallet-standard-features';
 import {
   Connection,
   PublicKey,
@@ -29,6 +40,7 @@ import {
   firstValueFrom,
   from,
   fromEvent,
+  map,
   merge,
   of,
   pairwise,
@@ -37,16 +49,22 @@ import {
   throwError,
   withLatestFrom,
 } from 'rxjs';
+import { ConnectionStore } from './connection.store';
 import {
   LocalStorageSubject,
   SignerWalletAdapterProps,
   WalletNotSelectedError,
   fromAdapterEvent,
+  getInferredClusterFromEndpoint,
+  getIsMobile,
+  getUriForAppIdentity,
   handleEvent,
   signAllTransactions,
+  signIn,
   signMessage,
   signTransaction,
 } from './internals';
+import { StandardWalletAdaptersStore } from './standard-wallet-adapters.store';
 
 export interface Wallet {
   adapter: Adapter;
@@ -71,13 +89,15 @@ export interface WalletConfig {
 
 export const WALLET_CONFIG = new InjectionToken<WalletConfig>('walletConfig');
 
-export const walletConfigProviderFactory = (config: Partial<WalletConfig>) => ({
+export const walletConfigProviderFactory = (
+  config?: Partial<WalletConfig>
+) => ({
   provide: WALLET_CONFIG,
   useValue: {
     autoConnect: false,
     localStorageKey: 'walletName',
     adapters: [],
-    ...config,
+    ...(config ?? {}),
   },
 });
 
@@ -120,13 +140,14 @@ export class WalletStore extends ComponentStore<WalletState> {
   private readonly _adapter$ = this.select(({ adapter }) => adapter);
   private readonly _name$ = this._name.asObservable();
   private readonly _readyState$ = this.select(({ readyState }) => readyState);
-  readonly wallets$ = this.select(({ wallets }) => wallets);
+
   readonly autoConnect$ = this.select(({ autoConnect }) => autoConnect);
+  readonly wallets$ = this.select(({ wallets }) => wallets);
   readonly wallet$ = this.select(({ wallet }) => wallet);
   readonly publicKey$ = this.select(({ publicKey }) => publicKey);
   readonly connecting$ = this.select(({ connecting }) => connecting);
-  readonly disconnecting$ = this.select(({ disconnecting }) => disconnecting);
   readonly connected$ = this.select(({ connected }) => connected);
+  readonly disconnecting$ = this.select(({ disconnecting }) => disconnecting);
   readonly error$ = this.select(({ error }) => error);
   readonly anchorWallet$ = this.select(
     this.publicKey$,
@@ -356,7 +377,7 @@ export class WalletStore extends ComponentStore<WalletState> {
   }
 
   // Connect the adapter to the wallet
-  connect(): Observable<unknown> {
+  connect(): Observable<void> {
     return combineLatest([
       this.connecting$,
       this.disconnecting$,
@@ -407,7 +428,7 @@ export class WalletStore extends ComponentStore<WalletState> {
   }
 
   // Disconnect the adapter from the wallet
-  disconnect(): Observable<unknown> {
+  disconnect(): Observable<void> {
     return combineLatest([this.disconnecting$, this._adapter$]).pipe(
       first(),
       filter(([disconnecting]) => !disconnecting),
@@ -496,4 +517,75 @@ export class WalletStore extends ComponentStore<WalletState> {
         )
       : undefined;
   }
+
+  // Sign in with Solana
+  signIn(
+    input?: SolanaSignInInput
+  ): Observable<SolanaSignInOutput> | undefined {
+    const { adapter, connected } = this.get();
+
+    return adapter && 'signIn' in adapter
+      ? signIn(adapter, connected, (error) => this._setError(error))(input)
+      : undefined;
+  }
 }
+
+export const walletStoreProvider = {
+  provide: WalletStore,
+  useFactory: (
+    connectionStore: ConnectionStore,
+    standardWalletAdaptersStore: StandardWalletAdaptersStore,
+    config: WalletConfig
+  ) => {
+    const mobileWalletAdapter$ = combineLatest([
+      connectionStore.connection$,
+      standardWalletAdaptersStore.adapters$,
+    ]).pipe(
+      map(([connection, standardWalletAdapters]) => {
+        if (!getIsMobile(standardWalletAdapters)) {
+          return null;
+        }
+
+        const existingMobileWalletAdapter = standardWalletAdapters.find(
+          (adapter) => adapter.name === SolanaMobileWalletAdapterWalletName
+        );
+
+        if (existingMobileWalletAdapter) {
+          return existingMobileWalletAdapter;
+        }
+
+        return new SolanaMobileWalletAdapter({
+          addressSelector: createDefaultAddressSelector(),
+          appIdentity: {
+            uri: getUriForAppIdentity(),
+          },
+          authorizationResultCache: createDefaultAuthorizationResultCache(),
+          cluster: getInferredClusterFromEndpoint(connection?.rpcEndpoint),
+          onWalletNotFound: createDefaultWalletNotFoundHandler(),
+        });
+      })
+    );
+
+    const adaptersWithMobileWalletAdapter$ = combineLatest([
+      mobileWalletAdapter$,
+      standardWalletAdaptersStore.adapters$,
+    ]).pipe(
+      map(([mobileWalletAdapter, standardWalletAdapters]) => {
+        if (
+          mobileWalletAdapter == null ||
+          standardWalletAdapters.indexOf(mobileWalletAdapter) !== -1
+        ) {
+          return standardWalletAdapters;
+        }
+        return [mobileWalletAdapter, ...standardWalletAdapters];
+      })
+    );
+
+    const walletStore = new WalletStore(config);
+
+    walletStore.setAdapters(adaptersWithMobileWalletAdapter$);
+
+    return walletStore;
+  },
+  deps: [ConnectionStore, StandardWalletAdaptersStore, WALLET_CONFIG],
+};

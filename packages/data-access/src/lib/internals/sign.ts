@@ -1,11 +1,16 @@
 import {
   MessageSignerWalletAdapter,
+  SignInMessageSignerWalletAdapter,
   SignerWalletAdapter,
   TransactionOrVersionedTransaction,
   WalletAdapterProps,
   WalletError,
   WalletNotConnectedError,
 } from '@solana/wallet-adapter-base';
+import {
+  SolanaSignInInput,
+  SolanaSignInOutput,
+} from '@solana/wallet-standard-features';
 import { Transaction, VersionedTransaction } from '@solana/web3.js';
 import { Observable, defer, from, throwError } from 'rxjs';
 
@@ -68,5 +73,21 @@ export const signAllTransactions = <
     }
 
     return from(defer(() => adapter.signAllTransactions(transactions)));
+  };
+};
+
+export const signIn = (
+  adapter: SignInMessageSignerWalletAdapter,
+  connected: boolean,
+  errorHandler: (error: WalletError) => unknown
+): ((
+  input?: SolanaSignInInput | undefined
+) => Observable<SolanaSignInOutput>) => {
+  return (input?: SolanaSignInInput | undefined) => {
+    if (!connected) {
+      return throwError(() => errorHandler(new WalletNotConnectedError()));
+    }
+
+    return from(defer(() => adapter.signIn(input)));
   };
 };
