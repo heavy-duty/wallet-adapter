@@ -28,7 +28,7 @@ export function provideWalletAdapter(
 @NgModule({})
 export class HdWalletAdapterModule {
   static forRoot(
-    walletConfig: Partial<WalletConfig>,
+    walletConfig?: Partial<WalletConfig>,
     connectionConfig?: ConnectionConfig
   ): ModuleWithProviders<HdWalletAdapterModule> {
     return {
