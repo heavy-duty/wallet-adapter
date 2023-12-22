@@ -5,21 +5,23 @@ import {
   ConnectionStore,
   connectionConfigProviderFactory,
 } from './connection.store';
+import { StandardWalletAdaptersStore } from './standard-wallet-adapters.store';
 import {
   WalletConfig,
-  WalletStore,
   walletConfigProviderFactory,
+  walletStoreProvider,
 } from './wallet.store';
 
 export function provideWalletAdapter(
-  walletConfig: Partial<WalletConfig>,
+  walletConfig?: Partial<WalletConfig>,
   connectionConfig?: ConnectionConfig
 ): Provider[] {
   return [
     walletConfigProviderFactory(walletConfig),
     connectionConfigProviderFactory(connectionConfig),
-    provideComponentStore(WalletStore),
     provideComponentStore(ConnectionStore),
+    provideComponentStore(StandardWalletAdaptersStore),
+    walletStoreProvider,
   ];
 }
 
@@ -34,8 +36,9 @@ export class HdWalletAdapterModule {
       providers: [
         walletConfigProviderFactory(walletConfig),
         connectionConfigProviderFactory(connectionConfig),
-        ConnectionStore,
-        WalletStore,
+        provideComponentStore(ConnectionStore),
+        provideComponentStore(StandardWalletAdaptersStore),
+        walletStoreProvider,
       ],
     };
   }

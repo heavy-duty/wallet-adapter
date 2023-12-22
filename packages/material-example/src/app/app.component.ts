@@ -1,5 +1,7 @@
 import { NgIf } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { WalletStore } from '@heavy-duty/wallet-adapter';
 import {
   HdObscureAddressPipe,
   HdWalletAdapterDirective,
@@ -19,7 +21,7 @@ import { HdWalletMultiButtonComponent } from '@heavy-duty/wallet-adapter-materia
       "
     >
       <header>
-        <h1>Wallet Adapter Example (CDK)</h1>
+        <h1>Wallet Adapter Example (Material)</h1>
       </header>
 
       <section>
@@ -47,4 +49,17 @@ import { HdWalletMultiButtonComponent } from '@heavy-duty/wallet-adapter-materia
     HdWalletMultiButtonComponent,
   ],
 })
-export class AppComponent {}
+export class AppComponent implements OnInit {
+  private readonly _walletStore = inject(WalletStore);
+  private readonly _matSnackBar = inject(MatSnackBar);
+
+  ngOnInit() {
+    this._walletStore.error$.subscribe((error) => {
+      if (error) {
+        this._matSnackBar.open(error?.message ?? 'Error occurred', 'close', {
+          duration: 4000,
+        });
+      }
+    });
+  }
+}
