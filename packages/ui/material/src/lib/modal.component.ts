@@ -139,7 +139,7 @@ export class HdWalletModalTriggerDirective extends ComponentStore<ViewModel> {
       <header>
         <button
           mat-icon-button
-          mat-dialog-close
+          (click)="onClose()"
           aria-label="Close wallet adapter selection"
         >
           <mat-icon>close</mat-icon>
