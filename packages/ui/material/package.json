@@ -1,6 +1,6 @@
 {
   "name": "@heavy-duty/wallet-adapter-material",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "peerDependencies": {},
   "dependencies": {
     "rxjs": "~7.8.0",
