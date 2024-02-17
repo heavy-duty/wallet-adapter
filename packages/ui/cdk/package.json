@@ -1,6 +1,6 @@
 {
   "name": "@heavy-duty/wallet-adapter-cdk",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "peerDependencies": {},
   "dependencies": {
     "@angular/core": "^17.0.0",
