@@ -2,6 +2,9 @@
   "pluginsConfig": {
     "@nrwl/js": {
       "analyzeSourceFiles": true
+    },
+    "@nx/js": {
+      "analyzeSourceFiles": true
     }
   },
   "extends": "nx/presets/npm.json",
@@ -42,6 +45,11 @@
     "@nx/eslint:lint": {
       "inputs": ["default", "{workspaceRoot}/.eslintrc.json"],
       "cache": true
+    },
+    "@nx/angular:package": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["default", "^default"]
     }
   },
   "nxCloudAccessToken": "MTcwNWIyNjItYjY5ZS00YTJkLTlhMmMtZmQ4Zjk0ODM1ZGFjfHJlYWQtd3JpdGU="
