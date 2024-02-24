@@ -11,7 +11,6 @@
       "options": {
         "project": "packages/data-access/ng-package.json"
       },
-
       "configurations": {
         "production": {
           "tsConfig": "packages/data-access/tsconfig.lib.prod.json"
@@ -31,13 +30,12 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": [
-          "packages/data-access/**/*.ts",
-          "packages/data-access/**/*.html",
-          "packages/data-access/package.json",
-          "packages/data-access/project.json"
+          "{projectRoot}/**/*.ts",
+          "{projectRoot}/**/*.html",
+          "{projectRoot}/package.json",
+          "{projectRoot}/project.json"
         ]
       }
     }

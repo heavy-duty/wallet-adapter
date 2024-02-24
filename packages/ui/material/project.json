@@ -30,13 +30,12 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": [
-          "packages/ui/material/**/*.ts",
-          "packages/ui/material/**/*.html",
-          "packages/ui/material/package.json",
-          "packages/ui/material/project.json"
+          "{projectRoot}/**/*.ts",
+          "{projectRoot}/**/*.html",
+          "{projectRoot}/package.json",
+          "{projectRoot}/project.json"
         ]
       }
     }
