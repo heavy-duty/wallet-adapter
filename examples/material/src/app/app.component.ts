@@ -1,57 +1,68 @@
-import { NgIf } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { NgClass } from '@angular/common';
+import { Component, OnInit, computed, inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { WalletStore } from '@heavy-duty/wallet-adapter';
 import {
-  HdObscureAddressPipe,
-  HdWalletAdapterDirective,
-} from '@heavy-duty/wallet-adapter-cdk';
+  WalletStore,
+  injectConnected,
+  injectPublicKey,
+  injectWallet,
+} from '@heavy-duty/wallet-adapter';
+import { HdObscureAddressPipe } from '@heavy-duty/wallet-adapter-cdk';
 import { HdWalletMultiButtonComponent } from '@heavy-duty/wallet-adapter-material';
 
 @Component({
   standalone: true,
   selector: 'hd-root',
   template: `
-    <main
-      *hdWalletAdapter="
-        let wallet = wallet;
-        let connected = connected;
-        let publicKey = publicKey;
-        let wallets = wallets
-      "
-    >
-      <header>
-        <h1>Wallet Adapter Example (Material)</h1>
-      </header>
+    <header>
+      <h1>Wallet Adapter Example (Material)</h1>
+    </header>
 
+    <main>
       <section>
-        <div>
-          <p>
-            Wallet:
-            {{ wallet !== null ? wallet.adapter.name : 'None' }}
-          </p>
+        <p>
+          Wallet:
+          {{ walletName() }}
+        </p>
 
-          <p *ngIf="publicKey">
-            Public Key: {{ publicKey.toBase58() | hdObscureAddress }}
-          </p>
+        <p>
+          Public Key:
 
-          <p>Status: {{ connected ? 'connected' : 'disconnected' }}</p>
-        </div>
+          @if (publicKey(); as publicKey) {
+            <span>
+              {{ publicKey.toBase58() | hdObscureAddress }}
+            </span>
+          } @else {
+            <span> None </span>
+          }
+        </p>
 
+        <p>
+          Status:
+          <span
+            [ngClass]="{
+              'text-red-600': !connected(),
+              'text-green-600': connected()
+            }"
+          >
+            {{ connected() ? 'Connected' : 'Disconnected' }}
+          </span>
+        </p>
+      </section>
+      <section>
         <hd-wallet-multi-button></hd-wallet-multi-button>
       </section>
     </main>
   `,
-  imports: [
-    NgIf,
-    HdWalletAdapterDirective,
-    HdObscureAddressPipe,
-    HdWalletMultiButtonComponent,
-  ],
+  imports: [NgClass, HdObscureAddressPipe, HdWalletMultiButtonComponent],
 })
 export class AppComponent implements OnInit {
   private readonly _walletStore = inject(WalletStore);
   private readonly _matSnackBar = inject(MatSnackBar);
+  readonly wallet = injectWallet();
+  readonly connected = injectConnected();
+  readonly publicKey = injectPublicKey();
+  readonly walletName = computed(() => this.wallet()?.adapter.name ?? 'None');
 
   ngOnInit() {
     this._walletStore.error$.subscribe((error) => {

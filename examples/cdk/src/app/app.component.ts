@@ -115,11 +115,9 @@ import { WalletsModalComponent } from './wallets-modal.component';
 export class AppComponent {
   private readonly _dialog = inject(Dialog);
   private readonly _walletStore = inject(WalletStore);
-
   readonly wallet = injectWallet();
   readonly connected = injectConnected();
   readonly publicKey = injectPublicKey();
-
   readonly walletName = computed(() => this.wallet()?.adapter.name ?? 'None');
 
   onSelectWallet() {
