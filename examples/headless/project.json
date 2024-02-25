@@ -19,7 +19,10 @@
           "examples/headless/src/favicon.ico",
           "examples/headless/src/assets"
         ],
-        "styles": ["examples/headless/src/styles.css"],
+        "styles": [
+          "examples/headless/src/styles.css",
+          "./node_modules/@angular/material/prebuilt-themes/purple-green.css"
+        ],
         "scripts": []
       },
       "configurations": {
