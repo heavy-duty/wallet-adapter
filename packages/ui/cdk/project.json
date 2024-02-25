@@ -30,13 +30,12 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": [
-          "packages/ui/cdk/**/*.ts",
-          "packages/ui/cdk/**/*.html",
-          "packages/ui/cdk/package.json",
-          "packages/ui/cdk/project.json"
+          "{projectRoot}/**/*.ts",
+          "{projectRoot}/**/*.html",
+          "{projectRoot}/package.json",
+          "{projectRoot}/project.json"
         ]
       }
     }

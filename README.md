@@ -13,60 +13,57 @@ The official Angular library for integrating wallets from the Solana ecosystem.
 
 ## Example use
 
+In your application configuration file:
+
 ```ts
-import { AsyncPipe, NgIf } from '@angular/common';
-import { Component, inject } from '@angular/core';
-import { provideWalletAdapter, WalletStore } from '@heavy-duty/wallet-adapter';
+import { ApplicationConfig } from '@angular/core';
+import { provideWalletAdapter } from '@heavy-duty/wallet-adapter';
+
+export const appConfig: ApplicationConfig = {
+  providers: [provideWalletAdapter()],
+};
+```
+
+Note: This file is usually located in `src/app/app.config.ts`.
+
+```ts
+import { Component, computed } from '@angular/core';
 import {
-  PhantomWalletAdapter,
-  SolflareWalletAdapter,
-} from '@solana/wallet-adapter-wallets';
+  injectConnected,
+  injectPublicKey,
+  injectWallet,
+} from '@heavy-duty/wallet-adapter';
 
 @Component({
   standalone: true,
   selector: 'hd-root',
-
   template: `
+    <header>
+      <h1>Wallet Adapter Example (Raw)</h1>
+    </header>
+
     <main>
-      <header>
-        <h1>Wallet Adapter Example (Raw)</h1>
-      </header>
-
       <section>
-        <div>
-          <p>
-            Wallet:
-            <ng-container *ngIf="wallet$ | async as wallet; else noneWallet">
-              {{ wallet.adapter.name }}
-            </ng-container>
-            <ng-template #noneWallet> None </ng-template>
-          </p>
+        <p>
+          Wallet:
 
-          <p *ngIf="publicKey$ | async as publicKey">
-            Public Key: {{ publicKey.toBase58() }}
-          </p>
+          {{ walletName() }}
+        </p>
 
-          <p>
-            Status: {{ (connected$ | async) ? 'connected' : 'disconnected' }}
-          </p>
-        </div>
+        <p>Status: {{ connected() ? 'connected' : 'disconnected' }}</p>
+
+        @if (publicKey(); as publicKey) {
+          <p>Public Key: {{ publicKey.toBase58() }}</p>
+        }
       </section>
     </main>
   `,
-  imports: [NgIf, AsyncPipe],
-  providers: [
-    provideWalletAdapter({
-      autoConnect: false,
-      adapters: [new PhantomWalletAdapter(), new SolflareWalletAdapter()],
-    }),
-  ],
 })
 export class AppComponent {
-  private readonly _walletStore = inject(WalletStore);
-
-  readonly connected$ = this._walletStore.connected$;
-  readonly publicKey$ = this._walletStore.publicKey$;
-  readonly wallet$ = this._walletStore.wallet$;
+  readonly connected = injectConnected();
+  readonly publicKey = injectPublicKey();
+  readonly wallet = injectWallet();
+  readonly walletName = computed(() => this.wallet()?.adapter.name ?? 'None');
 }
 ```
 
@@ -78,7 +75,8 @@ export class AppComponent {
 
 | Angular | @solana/web3.js | @heavy-duty/wallet-adapter |
 | ------- | --------------- | -------------------------- |
-| ^17.0.0 | 1.87.6          | 0.8.0                      |
+| ^17.1.0 | 1.87.6          | ^0.8.4                     |
+| ^17.0.0 | 1.87.6          | ^0.8.0                     |
 | 16.2.7  | 1.78.5          | 0.7.3                      |
 | 16.1.5  | 1.78.3          | 0.7.2                      |
 | 16.1.5  | 1.78.0          | 0.7.1                      |
@@ -116,9 +114,9 @@ nx build ui-material
 
 ## Resources
 
-- [Quickstart](/packages/raw-example/README.md) - Let your users select a wallet and connect to it.
-- [Quickstart CDK](/packages/cdk-example/README.md) - Let your users select a wallet and connect to it using the headless UI package.
-- [Quickstart Material](/packages/material-example/README.md) - Let your users select a wallet and connect to it using Angular Material UI.
+- [Quickstart](/examples/raw/README.md) - Let your users select a wallet and connect to it.
+- [Quickstart CDK](/examples/cdk/README.md) - Let your users select a wallet and connect to it using the headless UI package.
+- [Quickstart Material](/examples/material/README.md) - Let your users select a wallet and connect to it using Angular Material UI.
 
 NOTE: Using the material package is the easiest way to get started, but it's less customizable, instead if you want a custom experience use the CDK or the base library.
 

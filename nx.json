@@ -2,16 +2,19 @@
   "pluginsConfig": {
     "@nrwl/js": {
       "analyzeSourceFiles": true
+    },
+    "@nx/js": {
+      "analyzeSourceFiles": true
     }
   },
   "extends": "nx/presets/npm.json",
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "generators": {
     "@nx/angular:application": {
-      "style": "css",
+      "e2eTestRunner": "none",
       "linter": "eslint",
-      "unitTestRunner": "jest",
-      "e2eTestRunner": "none"
+      "style": "css",
+      "unitTestRunner": "jest"
     },
     "@nx/angular:library": {
       "linter": "eslint",
@@ -26,10 +29,6 @@
       "dependsOn": ["^build"],
       "cache": true
     },
-    "lint": {
-      "inputs": ["default", "{workspaceRoot}/.eslintrc.json"],
-      "cache": true
-    },
     "@nx/jest:jest": {
       "inputs": ["default", "^default", "{workspaceRoot}/jest.preset.js"],
       "cache": true,
@@ -42,6 +41,20 @@
           "codeCoverage": true
         }
       }
+    },
+    "@nx/eslint:lint": {
+      "inputs": ["default", "{workspaceRoot}/.eslintrc.json"],
+      "cache": true
+    },
+    "@nx/angular:package": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["default", "^default"]
+    },
+    "@angular-devkit/build-angular:application": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["default", "^default"]
     }
   },
   "nxCloudAccessToken": "MTcwNWIyNjItYjY5ZS00YTJkLTlhMmMtZmQ4Zjk0ODM1ZGFjfHJlYWQtd3JpdGU="

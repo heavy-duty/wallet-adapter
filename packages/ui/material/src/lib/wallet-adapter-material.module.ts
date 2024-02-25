@@ -1,29 +1,29 @@
 import { NgModule } from '@angular/core';
-import { HdWalletConnectButtonComponent } from './connect-button.component';
-import { HdWalletDisconnectButtonComponent } from './disconnect-button.component';
+import { HdConnectWalletButtonComponent } from './connect-button.component';
+import { HdDisconnectWalletButtonComponent } from './disconnect-button.component';
+import { HdWalletListItemComponent } from './list-item.component';
 import { HdWalletModalButtonComponent } from './modal-button.component';
-import {
-  HdWalletModalComponent,
-  HdWalletModalTriggerDirective,
-} from './modal.component';
+import { HdWalletModalComponent } from './modal.component';
+import { HdWalletModalService } from './modal.service';
 import { HdWalletMultiButtonComponent } from './multi-button.component';
 
 @NgModule({
   imports: [
-    HdWalletConnectButtonComponent,
-    HdWalletDisconnectButtonComponent,
+    HdConnectWalletButtonComponent,
+    HdDisconnectWalletButtonComponent,
     HdWalletMultiButtonComponent,
     HdWalletModalButtonComponent,
     HdWalletModalComponent,
-    HdWalletModalTriggerDirective,
+    HdWalletListItemComponent,
   ],
   exports: [
-    HdWalletConnectButtonComponent,
-    HdWalletDisconnectButtonComponent,
+    HdConnectWalletButtonComponent,
+    HdDisconnectWalletButtonComponent,
     HdWalletMultiButtonComponent,
     HdWalletModalButtonComponent,
     HdWalletModalComponent,
-    HdWalletModalTriggerDirective,
+    HdWalletListItemComponent,
   ],
+  providers: [HdWalletModalService],
 })
 export class HdWalletAdapterMaterialModule {}
