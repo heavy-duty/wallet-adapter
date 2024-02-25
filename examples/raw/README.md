@@ -7,11 +7,11 @@ By following this instructions you'll be able to set up the wallet-adapter into 
 ## Pre-requisites
 
 ```
-"rxjs": "~7.8.0",
-"@angular/core": "^17.0.0",
-"@ngrx/component-store": "^17.0.1",
-"@solana/web3.js": "1.87.6",
-"@solana/wallet-adapter-base": "0.9.23",
+"@angular/core": "^17.1.0"
+"@ngrx/component-store": "^17.0.0"
+"@solana/web3.js": "^1.87.6"
+"@solana/wallet-adapter-base": "^0.9.23"
+"rxjs": "~7.8.0"
 ```
 
 ## Installation
@@ -67,9 +67,14 @@ Now we have to add some wallet interactions, it would look something like this:
 This will result in something like:
 
 ```ts
-import { AsyncPipe, NgIf } from '@angular/common';
-import { Component, inject } from '@angular/core';
-import { WalletStore } from '@heavy-duty/wallet-adapter';
+import { Component, computed, inject } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
+import {
+  WalletStore,
+  injectConnected,
+  injectPublicKey,
+  injectWallet,
+} from '@heavy-duty/wallet-adapter';
 
 @Component({
   standalone: true,
@@ -84,51 +89,51 @@ import { WalletStore } from '@heavy-duty/wallet-adapter';
         <div>
           <p>
             Wallet:
-            <ng-container *ngIf="wallet$ | async as wallet; else noneWallet">
-              {{ wallet.adapter.name }}
-            </ng-container>
-            <ng-template #noneWallet> None </ng-template>
+
+            {{ walletName() }}
           </p>
 
-          <p *ngIf="publicKey$ | async as publicKey">
-            Public Key: {{ publicKey.toBase58() }}
-          </p>
+          <p>Status: {{ connected() ? 'connected' : 'disconnected' }}</p>
 
-          <p>
-            Status: {{ (connected$ | async) ? 'connected' : 'disconnected' }}
-          </p>
+          @if (publicKey(); as publicKey) {
+            <p>Public Key: {{ publicKey.toBase58() }}</p>
+          }
         </div>
 
-        <button
-          [disabled]="connected$ | async || (wallet$ | async) === null"
-          (click)="onConnect()"
-        >
+        <button [disabled]="connected() || !wallet()" (click)="onConnect()">
           Connect
         </button>
-        <button
-          [disabled]="(connected$ | async) === false"
-          (click)="onDisconnect()"
-        >
+        <button [disabled]="!connected()" (click)="onDisconnect()">
           Disconnect
         </button>
       </section>
     </main>
   `,
-  imports: [NgIf, AsyncPipe],
+  imports: [ReactiveFormsModule],
 })
 export class AppComponent {
   private readonly _walletStore = inject(WalletStore);
-
-  readonly connected$ = this._walletStore.connected$;
-  readonly publicKey$ = this._walletStore.publicKey$;
-  readonly wallet$ = this._walletStore.wallet$;
+  readonly wallet = injectWallet();
+  readonly connected = injectConnected();
+  readonly publicKey = injectPublicKey();
+  readonly walletName = computed(() => this.wallet()?.adapter.name ?? 'None');
 
   onConnect() {
-    this._walletStore.connect().subscribe();
+    console.log('Starting to connect wallet');
+
+    this._walletStore.connect().subscribe({
+      next: () => console.log('Wallet connected'),
+      error: (error) => console.error(error),
+    });
   }
 
   onDisconnect() {
-    this._walletStore.disconnect().subscribe();
+    console.log('Starting to disconnect wallet');
+
+    this._walletStore.disconnect().subscribe({
+      next: () => console.log('Wallet disconnected'),
+      error: (error) => console.error(error),
+    });
   }
 }
 ```
@@ -144,10 +149,15 @@ At this moment there's no way for the user to select a wallet in our example. We
 A simplified version of this would end up like this:
 
 ```ts
-import { AsyncPipe, NgFor, NgIf } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, OnInit, computed, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { WalletStore } from '@heavy-duty/wallet-adapter';
+import {
+  WalletStore,
+  injectConnected,
+  injectPublicKey,
+  injectWallet,
+  injectWallets,
+} from '@heavy-duty/wallet-adapter';
 import { WalletName } from '@solana/wallet-adapter-base';
 
 @Component({
@@ -163,19 +173,15 @@ import { WalletName } from '@solana/wallet-adapter-base';
         <div>
           <p>
             Wallet:
-            <ng-container *ngIf="wallet$ | async as wallet; else noneWallet">
-              {{ wallet.adapter.name }}
-            </ng-container>
-            <ng-template #noneWallet> None </ng-template>
+
+            {{ walletName() }}
           </p>
 
-          <p *ngIf="publicKey$ | async as publicKey">
-            Public Key: {{ publicKey.toBase58() }}
-          </p>
+          <p>Status: {{ connected() ? 'connected' : 'disconnected' }}</p>
 
-          <p>
-            Status: {{ (connected$ | async) ? 'connected' : 'disconnected' }}
-          </p>
+          @if (publicKey(); as publicKey) {
+            <p>Public Key: {{ publicKey.toBase58() }}</p>
+          }
         </div>
 
         <fieldset>
@@ -192,50 +198,45 @@ import { WalletName } from '@solana/wallet-adapter-base';
             <label for="select-wallet-empty">None</label>
           </div>
 
-          <div *ngFor="let wallet of wallets$ | async; let i = index">
-            <input
-              [id]="'select-wallet-' + i"
-              [formControl]="selectWalletControl"
-              [value]="wallet.adapter.name"
-              type="radio"
-              name="walletName"
-            />
-            <label [for]="'select-wallet-' + i">
-              {{ wallet.adapter.name }}
-            </label>
-          </div>
+          @for (wallet of wallets(); track wallet.adapter.name) {
+            <div>
+              <input
+                [id]="'select-wallet-' + wallet.adapter.name"
+                [formControl]="selectWalletControl"
+                [value]="wallet.adapter.name"
+                type="radio"
+                name="walletName"
+              />
+              <label [for]="'select-wallet-' + wallet.adapter.name">
+                {{ wallet.adapter.name }}
+              </label>
+            </div>
+          }
         </fieldset>
 
-        <button
-          [disabled]="connected$ | async || (wallet$ | async) === null"
-          (click)="onConnect()"
-        >
+        <button [disabled]="connected() || !wallet()" (click)="onConnect()">
           Connect
         </button>
-        <button
-          [disabled]="(connected$ | async) === false"
-          (click)="onDisconnect()"
-        >
+        <button [disabled]="!connected()" (click)="onDisconnect()">
           Disconnect
         </button>
       </section>
     </main>
   `,
-  imports: [NgIf, NgFor, AsyncPipe, ReactiveFormsModule],
+  imports: [ReactiveFormsModule],
 })
 export class AppComponent implements OnInit {
   private readonly _walletStore = inject(WalletStore);
   private readonly _formBuilder = inject(FormBuilder);
-
+  readonly wallet = injectWallet();
+  readonly connected = injectConnected();
+  readonly publicKey = injectPublicKey();
+  readonly wallets = injectWallets();
+  readonly walletName = computed(() => this.wallet()?.adapter.name ?? 'None');
   readonly selectWalletControl = this._formBuilder.control<WalletName | null>(
     null,
     [Validators.required]
   );
-
-  readonly connected$ = this._walletStore.connected$;
-  readonly publicKey$ = this._walletStore.publicKey$;
-  readonly wallets$ = this._walletStore.wallets$;
-  readonly wallet$ = this._walletStore.wallet$;
 
   ngOnInit() {
     this._walletStore.wallet$.subscribe((wallet) =>
@@ -244,17 +245,28 @@ export class AppComponent implements OnInit {
       })
     );
 
-    this.selectWalletControl.valueChanges.subscribe((wallet) => {
-      this._walletStore.selectWallet(wallet);
+    this.selectWalletControl.valueChanges.subscribe((walletName) => {
+      this._walletStore.selectWallet(walletName);
+      console.log(`Wallet selected: ${walletName}`);
     });
   }
 
   onConnect() {
-    this._walletStore.connect().subscribe();
+    console.log('Starting to connect wallet');
+
+    this._walletStore.connect().subscribe({
+      next: () => console.log('Wallet connected'),
+      error: (error) => console.error(error),
+    });
   }
 
   onDisconnect() {
-    this._walletStore.disconnect().subscribe();
+    console.log('Starting to disconnect wallet');
+
+    this._walletStore.disconnect().subscribe({
+      next: () => console.log('Wallet disconnected'),
+      error: (error) => console.error(error),
+    });
   }
 }
 ```
@@ -270,10 +282,15 @@ Now that the user has connected a wallet, is time to do something with it. We'll
 A simplified version of this would end up like this:
 
 ```ts
-import { AsyncPipe, NgFor, NgIf } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, OnInit, computed, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { WalletStore } from '@heavy-duty/wallet-adapter';
+import {
+  WalletStore,
+  injectConnected,
+  injectPublicKey,
+  injectWallet,
+  injectWallets,
+} from '@heavy-duty/wallet-adapter';
 import { WalletName } from '@solana/wallet-adapter-base';
 
 @Component({
@@ -289,21 +306,15 @@ import { WalletName } from '@solana/wallet-adapter-base';
         <div>
           <p>
             Wallet:
-            <ng-container *ngIf="wallet$ | async as wallet; else noneWallet">
-              {{ wallet.adapter.name }}
-            </ng-container>
-            <ng-template #noneWallet> None </ng-template>
+
+            {{ walletName() }}
           </p>
 
-          <p *ngIf="publicKey$ | async as publicKey">
-            Public Key: {{ publicKey.toBase58() }}
-          </p>
+          <p>Status: {{ connected() ? 'connected' : 'disconnected' }}</p>
 
-          <p>
-            Status: {{ (connected$ | async) ? 'connected' : 'disconnected' }}
-          </p>
+          @if (publicKey(); as publicKey) {
+            <p>Public Key: {{ publicKey.toBase58() }}</p>
 
-          <div *ngIf="publicKey$ | async as publicKey">
             <label class="mr-2" for="message-form-content"
               >Sign Message:
             </label>
@@ -321,7 +332,7 @@ import { WalletName } from '@solana/wallet-adapter-base';
             >
               Sign
             </button>
-          </div>
+          }
         </div>
 
         <fieldset>
@@ -338,41 +349,41 @@ import { WalletName } from '@solana/wallet-adapter-base';
             <label for="select-wallet-empty">None</label>
           </div>
 
-          <div *ngFor="let wallet of wallets$ | async; let i = index">
-            <input
-              [id]="'select-wallet-' + i"
-              [formControl]="selectWalletControl"
-              [value]="wallet.adapter.name"
-              type="radio"
-              name="walletName"
-            />
-            <label [for]="'select-wallet-' + i">
-              {{ wallet.adapter.name }}
-            </label>
-          </div>
+          @for (wallet of wallets(); track wallet.adapter.name) {
+            <div>
+              <input
+                [id]="'select-wallet-' + wallet.adapter.name"
+                [formControl]="selectWalletControl"
+                [value]="wallet.adapter.name"
+                type="radio"
+                name="walletName"
+              />
+              <label [for]="'select-wallet-' + wallet.adapter.name">
+                {{ wallet.adapter.name }}
+              </label>
+            </div>
+          }
         </fieldset>
 
-        <button
-          [disabled]="(connected$ | async) || (wallet$ | async) === null"
-          (click)="onConnect()"
-        >
+        <button [disabled]="connected() || !wallet()" (click)="onConnect()">
           Connect
         </button>
-        <button
-          [disabled]="(connected$ | async) === false"
-          (click)="onDisconnect()"
-        >
+        <button [disabled]="!connected()" (click)="onDisconnect()">
           Disconnect
         </button>
       </section>
     </main>
   `,
-  imports: [NgIf, NgFor, AsyncPipe, ReactiveFormsModule],
+  imports: [ReactiveFormsModule],
 })
 export class AppComponent implements OnInit {
   private readonly _walletStore = inject(WalletStore);
   private readonly _formBuilder = inject(FormBuilder);
-
+  readonly wallet = injectWallet();
+  readonly connected = injectConnected();
+  readonly publicKey = injectPublicKey();
+  readonly wallets = injectWallets();
+  readonly walletName = computed(() => this.wallet()?.adapter.name ?? 'None');
   readonly selectWalletControl = this._formBuilder.control<WalletName | null>(
     null,
     [Validators.required]
@@ -380,11 +391,6 @@ export class AppComponent implements OnInit {
   readonly messageControl = this._formBuilder.control<string>('', {
     nonNullable: true,
   });
-
-  readonly connected$ = this._walletStore.connected$;
-  readonly publicKey$ = this._walletStore.publicKey$;
-  readonly wallets$ = this._walletStore.wallets$;
-  readonly wallet$ = this._walletStore.wallet$;
 
   ngOnInit() {
     this._walletStore.wallet$.subscribe((wallet) =>
@@ -434,4 +440,4 @@ export class AppComponent implements OnInit {
 }
 ```
 
-You can [access the final code](/packages/raw-example/) if you'd rather copy the application.
+You can [access the final code](/examples/raw/) if you'd rather copy the application.
