@@ -1,8 +1,8 @@
 import { NgIf } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { Wallet } from '@heavy-duty/wallet-adapter';
+import { HdWalletIconComponent } from '@heavy-duty/wallet-adapter-cdk';
 import { WalletReadyState } from '@solana/wallet-adapter-base';
-import { HdWalletIconComponent } from './wallet-icon.component';
 
 @Component({
   selector: 'hd-wallet-list-item',
