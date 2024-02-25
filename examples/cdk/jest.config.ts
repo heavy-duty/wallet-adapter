@@ -4,7 +4,7 @@ export default {
   preset: '../../jest.preset.js',
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
   globals: {},
-  coverageDirectory: '../../coverage/packages/cdk-example',
+  coverageDirectory: '../../coverage/examples/cdk',
   transform: {
     '^.+\\.(ts|mjs|js|html)$': [
       'jest-preset-angular',

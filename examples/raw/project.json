@@ -2,23 +2,20 @@
   "name": "raw-example",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-  "sourceRoot": "packages/raw-example/src",
+  "sourceRoot": "examples/raw/src",
   "prefix": "hd",
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:browser",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/packages/raw-example",
-        "index": "packages/raw-example/src/index.html",
-        "main": "packages/raw-example/src/main.ts",
+        "outputPath": "dist/examples/raw",
+        "index": "examples/raw/src/index.html",
+        "main": "examples/raw/src/main.ts",
         "polyfills": ["zone.js"],
-        "tsConfig": "packages/raw-example/tsconfig.app.json",
-        "assets": [
-          "packages/raw-example/src/favicon.ico",
-          "packages/raw-example/src/assets"
-        ],
-        "styles": ["packages/raw-example/src/styles.css"],
+        "tsConfig": "examples/raw/tsconfig.app.json",
+        "assets": ["examples/raw/src/favicon.ico", "examples/raw/src/assets"],
+        "styles": ["examples/raw/src/styles.css"],
         "scripts": []
       },
       "configurations": {
@@ -74,7 +71,7 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "packages/raw-example/jest.config.ts"
+        "jestConfig": "examples/raw/jest.config.ts"
       }
     }
   },
