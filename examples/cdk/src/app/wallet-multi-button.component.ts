@@ -1,4 +1,5 @@
 import { Dialog } from '@angular/cdk/dialog';
+import { GlobalPositionStrategy } from '@angular/cdk/overlay';
 import { Component, inject } from '@angular/core';
 import {
   WalletStore,
@@ -78,7 +79,12 @@ export class WalletMultiButtonComponent {
   onSelectWallet() {
     this._dialog
       .open<WalletName | undefined, unknown, WalletsModalComponent>(
-        WalletsModalComponent
+        WalletsModalComponent,
+        {
+          positionStrategy: new GlobalPositionStrategy()
+            .top('8rem')
+            .centerHorizontally(),
+        }
       )
       .closed.pipe(
         concatMap((walletName) => {

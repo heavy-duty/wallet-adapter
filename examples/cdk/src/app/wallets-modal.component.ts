@@ -12,7 +12,7 @@ import { WalletName, WalletReadyState } from '@solana/wallet-adapter-base';
 @Component({
   selector: 'hd-wallets-modal',
   template: `
-    <div class="w-[450px] mx-auto border-2 border-black">
+    <div class="w-[450px] mx-auto border-2 border-black bg-white">
       <header class="p-16 relative">
         <h2 class="text-2xl text-center">
           {{ message() }}

@@ -10,6 +10,7 @@ The application should have tailwindcss already configured.
 
 ```
 "@angular/core": "^17.1.0"
+"@angular/cdk": "^17.1.0"
 "@angular/platform-browser": "^17.1.0"
 "@angular/common": "^17.1.0"
 "@ngrx/component-store": "^17.0.0"
@@ -59,6 +60,19 @@ import { AppComponent } from './app/app.component';
 bootstrapApplication(AppComponent, {
   providers: [provideWalletAdapter()],
 }).catch((err) => console.error(err));
+```
+
+### Set up Tailwind CSS
+
+The recommended way is using Nx's setup-tailwind generator.
+
+### Add overlay styles
+
+Go to the `styles.css` file and include the prebuilt overlay styles.
+
+```css
+/* ... */
+@import '@angular/cdk/overlay-prebuilt.css';
 ```
 
 ### Create a Wallet Modal
