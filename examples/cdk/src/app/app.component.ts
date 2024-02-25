@@ -68,11 +68,11 @@ import { WalletsModalComponent } from './wallets-modal.component';
             #disconnectWallet="hdDisconnectWallet"
             class="flex justify-center items-center gap-2 px-4 py-2 bg-red-400 rounded-md disabled:cursor-not-allowed"
           >
-            <span> Disconnect </span>
-
             @if (wallet(); as wallet) {
               <hd-wallet-icon [hdWallet]="wallet"></hd-wallet-icon>
             }
+
+            <span> {{ disconnectWallet.message() }} </span>
           </button>
         } @else if (wallet()) {
           <button
@@ -86,11 +86,11 @@ import { WalletsModalComponent } from './wallets-modal.component';
             #connectWallet="hdConnectWallet"
             class="flex gap-2 items-center px-4 py-2 bg-blue-500 rounded-md disabled:cursor-not-allowed"
           >
-            <span> Connect </span>
-
             @if (wallet(); as wallet) {
               <hd-wallet-icon [hdWallet]="wallet"></hd-wallet-icon>
             }
+
+            <span> {{ connectWallet.message() }} </span>
           </button>
         } @else {
           <button
