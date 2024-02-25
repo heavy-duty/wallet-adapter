@@ -3,7 +3,6 @@ export * from './lib/disconnect-wallet.directive';
 export * from './lib/encode-text.pipe';
 export * from './lib/list-item.component';
 export * from './lib/obscure-address.pipe';
-export * from './lib/select-and-connect-wallet.directive';
 export * from './lib/select-wallet.directive';
 export * from './lib/sign-message.directive';
 export * from './lib/wallet-adapter-cdk.module';

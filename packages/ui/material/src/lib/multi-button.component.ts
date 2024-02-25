@@ -10,7 +10,7 @@ import {
 import { MatButton } from '@angular/material/button';
 import { MatDivider } from '@angular/material/divider';
 import { MatIcon } from '@angular/material/icon';
-import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
+import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
 import {
   injectConnected,
   injectPublicKey,
@@ -29,15 +29,12 @@ import { ButtonColor } from './types';
 @Component({
   selector: 'hd-wallet-multi-button',
   template: `
-    @if (!wallet()) {
-      <hd-wallet-modal-button [color]="color()"></hd-wallet-modal-button>
-    } @else if (!connected()) {
-      <hd-connect-wallet-button [color]="color()"></hd-connect-wallet-button>
-    } @else {
+    @if (connected()) {
       <button
         [color]="color()"
         [matMenuTriggerFor]="walletMenu"
         mat-raised-button
+        [disabled]="disabled()"
       >
         <ng-content></ng-content>
         @if (!children) {
@@ -80,6 +77,16 @@ import { ButtonColor } from './types';
           Disconnect
         </button>
       </mat-menu>
+    } @else if (wallet()) {
+      <hd-connect-wallet-button
+        [color]="color()"
+        [disabled]="disabled()"
+      ></hd-connect-wallet-button>
+    } @else {
+      <hd-wallet-modal-button
+        [color]="color()"
+        [disabled]="disabled()"
+      ></hd-wallet-modal-button>
     }
   `,
   styles: [
@@ -99,6 +106,7 @@ import { ButtonColor } from './types';
     MatDivider,
     MatIcon,
     MatMenu,
+    MatMenuItem,
     MatMenuTrigger,
     HdWalletIconComponent,
     HdObscureAddressPipe,
@@ -111,10 +119,11 @@ export class HdWalletMultiButtonComponent {
   private readonly _walletModalService = inject(HdWalletModalService);
   readonly wallet = injectWallet();
   readonly connected = injectConnected();
+  readonly publicKey = injectPublicKey();
 
   @ContentChild('children') children: ElementRef | null = null;
   readonly color = input<ButtonColor>('primary');
-  readonly publicKey = injectPublicKey();
+  readonly disabled = input(false);
 
   onOpenWalletModal() {
     this._walletModalService.open();

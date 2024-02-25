@@ -3,6 +3,7 @@ import {
   Component,
   ContentChild,
   ElementRef,
+  inject,
   input,
 } from '@angular/core';
 import { MatButton } from '@angular/material/button';
@@ -18,25 +19,23 @@ import { ButtonColor } from './types';
     <button
       [color]="color()"
       [disabled]="
-        connectWallet.connecting() ||
-        !connectWallet.wallet() ||
-        connectWallet.connected() ||
+        hdConnectWalletDirective.connecting() ||
+        !hdConnectWalletDirective.wallet() ||
+        hdConnectWalletDirective.connected() ||
         disabled()
       "
-      (click)="connectWallet.run()"
+      (click)="hdConnectWalletDirective.run()"
       mat-raised-button
-      hdConnectWallet
-      #connectWallet="hdConnectWallet"
     >
       <ng-content></ng-content>
 
       @if (!children) {
         <span class="button-content">
-          @if (connectWallet.wallet(); as wallet) {
+          @if (hdConnectWalletDirective.wallet(); as wallet) {
             <hd-wallet-icon [hdWallet]="wallet"></hd-wallet-icon>
           }
 
-          {{ connectWallet.message() }}
+          {{ hdConnectWalletDirective.message() }}
         </span>
       }
     </button>
@@ -56,11 +55,13 @@ import { ButtonColor } from './types';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [HdWalletIconComponent, MatButton, HdConnectWalletDirective],
+  imports: [HdWalletIconComponent, MatButton],
+  hostDirectives: [HdConnectWalletDirective],
 })
 export class HdConnectWalletButtonComponent {
-  @ContentChild('children') children: ElementRef | null = null;
+  readonly hdConnectWalletDirective = inject(HdConnectWalletDirective);
 
+  @ContentChild('children') children: ElementRef | null = null;
   readonly color = input<ButtonColor>('primary');
   readonly disabled = input(false);
 }

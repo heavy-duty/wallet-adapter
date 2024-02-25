@@ -1,18 +1,15 @@
 import { NgClass } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
-import { MatButton } from '@angular/material/button';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { MatIconButton } from '@angular/material/button';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatExpansionPanel } from '@angular/material/expansion';
 import { MatIcon } from '@angular/material/icon';
 import { MatListOption, MatSelectionList } from '@angular/material/list';
-import { injectWallets } from '@heavy-duty/wallet-adapter';
-import { HdWalletListItemComponent } from '@heavy-duty/wallet-adapter-cdk';
-import { WalletName, WalletReadyState } from '@solana/wallet-adapter-base';
+import {
+  HdSelectWalletDirective,
+  HdWalletListItemComponent,
+} from '@heavy-duty/wallet-adapter-cdk';
+import { WalletName } from '@solana/wallet-adapter-base';
 
 @Component({
   selector: 'hd-wallet-modal',
@@ -25,15 +22,18 @@ import { WalletName, WalletReadyState } from '@solana/wallet-adapter-base';
       >
         <mat-icon>close</mat-icon>
       </button>
-      <h2>{{ message() }}</h2>
+      <h2>{{ hdSelectWalletDirective.message() }}</h2>
     </header>
 
-    @if (installedWallets().length > 0) {
+    @if (hdSelectWalletDirective.installedWallets().length > 0) {
       <mat-selection-list
         [multiple]="false"
         (selectionChange)="onSelectionChange($event.options[0].value)"
       >
-        @for (wallet of installedWallets(); track wallet.adapter.name) {
+        @for (
+          wallet of hdSelectWalletDirective.installedWallets();
+          track wallet.adapter.name
+        ) {
           <mat-list-option [value]="wallet.adapter.name">
             <hd-wallet-list-item [hdWallet]="wallet"></hd-wallet-list-item>
           </mat-list-option>
@@ -44,7 +44,10 @@ import { WalletName, WalletReadyState } from '@solana/wallet-adapter-base';
           disabled
         >
           <ng-template matExpansionPanelContent>
-            @for (wallet of otherWallets(); track wallet.adapter.name) {
+            @for (
+              wallet of hdSelectWalletDirective.otherWallets();
+              track wallet.adapter.name
+            ) {
               <mat-list-option [value]="wallet.adapter.name">
                 <hd-wallet-list-item [hdWallet]="wallet"></hd-wallet-list-item>
               </mat-list-option>
@@ -53,7 +56,7 @@ import { WalletName, WalletReadyState } from '@solana/wallet-adapter-base';
         </mat-expansion-panel>
       </mat-selection-list>
 
-      @if (otherWallets().length > 0) {
+      @if (hdSelectWalletDirective.otherWallets().length > 0) {
         <button
           class="toggle-expand"
           (click)="expansionPanel.toggle()"
@@ -70,7 +73,11 @@ import { WalletName, WalletReadyState } from '@solana/wallet-adapter-base';
     } @else {
       <button
         class="getting-started"
-        (click)="onGettingStarted()"
+        (click)="
+          onGettingStarted(
+            hdSelectWalletDirective.getStartedWallet().adapter.name
+          )
+        "
         color="primary"
         mat-flat-button
       >
@@ -87,7 +94,10 @@ import { WalletName, WalletReadyState } from '@solana/wallet-adapter-base';
             [multiple]="false"
             (selectionChange)="onSelectionChange($event.options[0].value)"
           >
-            @for (wallet of otherWallets(); track wallet.adapter.name) {
+            @for (
+              wallet of hdSelectWalletDirective.otherWallets();
+              track wallet.adapter.name
+            ) {
               <mat-list-option [value]="wallet.adapter.name">
                 <hd-wallet-list-item [hdWallet]="wallet"></hd-wallet-list-item>
               </mat-list-option>
@@ -96,7 +106,7 @@ import { WalletName, WalletReadyState } from '@solana/wallet-adapter-base';
         </ng-template>
       </mat-expansion-panel>
 
-      @if (otherWallets().length > 0) {
+      @if (hdSelectWalletDirective.otherWallets().length > 0) {
         <button
           class="toggle-expand"
           (click)="expansionPanel.toggle()"
@@ -173,63 +183,28 @@ import { WalletName, WalletReadyState } from '@solana/wallet-adapter-base';
   standalone: true,
   imports: [
     NgClass,
-    MatButton,
+    MatIconButton,
     MatIcon,
     MatSelectionList,
     MatListOption,
     MatExpansionPanel,
     HdWalletListItemComponent,
   ],
+  hostDirectives: [HdSelectWalletDirective],
 })
 export class HdWalletModalComponent {
-  private readonly _dialogRef =
-    inject<MatDialogRef<HdWalletModalComponent, WalletName>>(MatDialogRef);
-  private readonly _wallets = injectWallets();
+  private readonly _dialogRef = inject(MatDialogRef);
 
-  readonly installedWallets = computed(() =>
-    this._wallets().filter(
-      (wallet) => wallet.readyState === WalletReadyState.Installed
-    )
-  );
-  readonly otherWallets = computed(() => [
-    ...this._wallets().filter(
-      (wallet) => wallet.readyState === WalletReadyState.Loadable
-    ),
-    ...this._wallets().filter(
-      (wallet) => wallet.readyState === WalletReadyState.NotDetected
-    ),
-  ]);
-  readonly getStartedWallet = computed(() =>
-    this.installedWallets().length
-      ? this.installedWallets()[0]
-      : this._wallets().find(
-          (wallet: { adapter: { name: WalletName } }) =>
-            wallet.adapter.name === 'Backpack'
-        ) ||
-        this._wallets().find(
-          (wallet: { adapter: { name: WalletName } }) =>
-            wallet.adapter.name === 'Phantom'
-        ) ||
-        this._wallets().find(
-          (wallet: { readyState: WalletReadyState }) =>
-            wallet.readyState === WalletReadyState.Loadable
-        ) ||
-        this.otherWallets()[0]
-  );
-  readonly message = computed(() => {
-    if (this.installedWallets().length > 0) {
-      return 'Connect a wallet on Solana to continue';
-    } else {
-      return `You'll need a wallet on Solana to continue`;
-    }
-  });
+  readonly hdSelectWalletDirective = inject(HdSelectWalletDirective);
 
   onSelectionChange(walletName: WalletName): void {
-    this._dialogRef.close(walletName);
+    this.hdSelectWalletDirective.run(walletName);
+    this._dialogRef.close();
   }
 
-  onGettingStarted(): void {
-    this._dialogRef.close(this.getStartedWallet().adapter.name);
+  onGettingStarted(walletName: WalletName): void {
+    this.hdSelectWalletDirective.run(walletName);
+    this._dialogRef.close();
   }
 
   onClose(): void {

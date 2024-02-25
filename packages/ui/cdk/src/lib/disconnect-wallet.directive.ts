@@ -1,4 +1,10 @@
-import { Directive, computed, inject } from '@angular/core';
+import {
+  Directive,
+  EventEmitter,
+  Output,
+  computed,
+  inject,
+} from '@angular/core';
 import {
   WalletStore,
   injectDisconnecting,
@@ -20,7 +26,18 @@ export class HdDisconnectWalletDirective {
     return 'Disconnect Wallet';
   });
 
+  @Output() hdDisconnectWalletSuccess = new EventEmitter();
+  @Output() hdDisconnectWalletStarts = new EventEmitter();
+  @Output() hdDisconnectWalletError = new EventEmitter();
+  @Output() hdDisconnectWalletEnds = new EventEmitter();
+
   run() {
-    this._walletStore.disconnect().subscribe();
+    this.hdDisconnectWalletStarts.emit();
+
+    this._walletStore.disconnect().subscribe({
+      next: () => this.hdDisconnectWalletSuccess.emit(),
+      error: (error) => this.hdDisconnectWalletError.emit(error),
+      complete: () => this.hdDisconnectWalletEnds.emit(),
+    });
   }
 }

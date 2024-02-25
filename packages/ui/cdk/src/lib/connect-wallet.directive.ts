@@ -1,4 +1,10 @@
-import { Directive, computed, inject } from '@angular/core';
+import {
+  Directive,
+  EventEmitter,
+  Output,
+  computed,
+  inject,
+} from '@angular/core';
 import {
   WalletStore,
   injectConnected,
@@ -23,7 +29,18 @@ export class HdConnectWalletDirective {
     return 'Connect Wallet';
   });
 
+  @Output() hdConnectWalletSuccess = new EventEmitter();
+  @Output() hdConnectWalletStarts = new EventEmitter();
+  @Output() hdConnectWalletError = new EventEmitter();
+  @Output() hdConnectWalletEnds = new EventEmitter();
+
   run() {
-    this._walletStore.connect().subscribe();
+    this.hdConnectWalletStarts.emit();
+
+    this._walletStore.connect().subscribe({
+      next: () => this.hdConnectWalletSuccess.emit(),
+      error: (error) => this.hdConnectWalletError.emit(error),
+      complete: () => this.hdConnectWalletEnds.emit(),
+    });
   }
 }

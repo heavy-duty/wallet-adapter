@@ -13,7 +13,12 @@ import { ButtonColor } from './types';
 @Component({
   selector: 'hd-wallet-modal-button',
   template: `
-    <button [color]="color()" (click)="onOpen()" mat-raised-button>
+    <button
+      [color]="color()"
+      [disabled]="disabled()"
+      (click)="onOpen()"
+      mat-raised-button
+    >
       <ng-content></ng-content>
 
       @if (!children) {
@@ -44,6 +49,7 @@ export class HdWalletModalButtonComponent {
   @ContentChild('children') children: ElementRef | null = null;
 
   readonly color = input<ButtonColor>('primary');
+  readonly disabled = input(false);
 
   onOpen() {
     this._walletModalService.open();
