@@ -1,5 +1,10 @@
-import { Directive, EventEmitter, inject, Output } from '@angular/core';
-import { WalletStore } from '@heavy-duty/wallet-adapter';
+import { Directive, computed, inject } from '@angular/core';
+import {
+  WalletStore,
+  injectConnected,
+  injectConnecting,
+  injectWallet,
+} from '@heavy-duty/wallet-adapter';
 
 @Directive({
   selector: '[hdConnectWallet]',
@@ -8,17 +13,17 @@ import { WalletStore } from '@heavy-duty/wallet-adapter';
 })
 export class HdConnectWalletDirective {
   private readonly _walletStore = inject(WalletStore);
-
-  @Output() hdWalletConnected = new EventEmitter();
-  @Output() hdConnectWalletStarts = new EventEmitter();
-  @Output() hdConnectWalletError = new EventEmitter();
+  readonly connecting = injectConnecting();
+  readonly connected = injectConnected();
+  readonly wallet = injectWallet();
+  readonly message = computed(() => {
+    if (this.connecting()) return 'Connecting...';
+    if (this.connected()) return 'Connected';
+    if (this.wallet()) return 'Connect';
+    return 'Connect Wallet';
+  });
 
   run() {
-    this.hdConnectWalletStarts.emit();
-
-    this._walletStore.connect().subscribe({
-      next: () => this.hdWalletConnected.emit(),
-      error: (error) => this.hdConnectWalletError.emit(error),
-    });
+    this._walletStore.connect().subscribe();
   }
 }

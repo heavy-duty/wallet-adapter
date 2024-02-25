@@ -1,37 +1,43 @@
-import { NgIf } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
   ContentChild,
   ElementRef,
-  Input,
+  input,
 } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { Wallet } from '@heavy-duty/wallet-adapter';
+import { MatButton } from '@angular/material/button';
 import {
   HdDisconnectWalletDirective,
-  HdWalletAdapterDirective,
   HdWalletIconComponent,
 } from '@heavy-duty/wallet-adapter-cdk';
 import { ButtonColor } from './types';
 
 @Component({
-  selector: 'hd-wallet-disconnect-button',
+  selector: 'hd-disconnect-wallet-button',
   template: `
     <button
-      #hdDisconnectWallet="hdDisconnectWallet"
-      *hdWalletAdapter="let wallet = wallet; let disconnecting = disconnecting"
-      [color]="color"
-      [disabled]="disconnecting || !wallet"
-      (click)="hdDisconnectWallet.run()"
-      hdDisconnectWallet
+      [color]="color()"
+      [disabled]="
+        disconnectWallet.disconnecting() ||
+        !disconnectWallet.wallet() ||
+        disabled()
+      "
+      (click)="disconnectWallet.run()"
       mat-raised-button
+      hdDisconnectWallet
+      #disconnectWallet="hdDisconnectWallet"
     >
       <ng-content></ng-content>
-      <div *ngIf="!children" class="button-content">
-        <hd-wallet-icon *ngIf="wallet" [hdWallet]="wallet"></hd-wallet-icon>
-        {{ getMessage(disconnecting, wallet) }}
-      </div>
+
+      @if (!children) {
+        <span class="button-content">
+          @if (disconnectWallet.wallet(); as wallet) {
+            <hd-wallet-icon *ngIf="wallet" [hdWallet]="wallet"></hd-wallet-icon>
+          }
+
+          {{ disconnectWallet.message() }}
+        </span>
+      }
     </button>
   `,
   styles: [
@@ -45,22 +51,11 @@ import { ButtonColor } from './types';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [
-    NgIf,
-    MatButtonModule,
-    HdWalletAdapterDirective,
-    HdWalletIconComponent,
-    HdDisconnectWalletDirective,
-  ],
+  imports: [MatButton, HdWalletIconComponent, HdDisconnectWalletDirective],
 })
-export class HdWalletDisconnectButtonComponent {
+export class HdDisconnectWalletButtonComponent {
   @ContentChild('children') children: ElementRef | null = null;
-  @Input() color: ButtonColor = 'primary';
-  @Input() disabled = false;
 
-  getMessage(disconnecting: boolean, wallet: Wallet | null) {
-    if (disconnecting) return 'Disconnecting...';
-    if (wallet) return 'Disconnect';
-    return 'Disconnect Wallet';
-  }
+  readonly color = input<ButtonColor>('primary');
+  readonly disabled = input(false);
 }

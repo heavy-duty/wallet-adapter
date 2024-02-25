@@ -1,40 +1,24 @@
-import { NgIf } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
   ContentChild,
   ElementRef,
-  Input,
+  inject,
+  input,
 } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule } from '@angular/material/dialog';
-import {
-  HdSelectAndConnectWalletDirective,
-  HdWalletAdapterDirective,
-  HdWalletIconComponent,
-} from '@heavy-duty/wallet-adapter-cdk';
-import {
-  HdWalletModalComponent,
-  HdWalletModalTriggerDirective,
-} from './modal.component';
+import { MatButton } from '@angular/material/button';
+import { HdWalletModalService } from './modal.service';
 import { ButtonColor } from './types';
 
 @Component({
   selector: 'hd-wallet-modal-button',
   template: `
-    <button
-      #hdWalletModalTrigger="hdWalletModalTrigger"
-      #hdSelectAndConnectWallet="hdSelectAndConnectWallet"
-      *hdWalletAdapter="let wallets = wallets"
-      [color]="color"
-      (click)="hdWalletModalTrigger.open(wallets)"
-      (hdSelectWallet)="hdSelectAndConnectWallet.run($event)"
-      mat-raised-button
-      hdWalletModalTrigger
-      hdSelectAndConnectWallet
-    >
+    <button [color]="color()" (click)="onOpen()" mat-raised-button>
       <ng-content></ng-content>
-      <ng-container *ngIf="!children">Select Wallet</ng-container>
+
+      @if (!children) {
+        <ng-container>Select Wallet</ng-container>
+      }
     </button>
   `,
   styles: [
@@ -52,18 +36,16 @@ import { ButtonColor } from './types';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [
-    NgIf,
-    MatButtonModule,
-    MatDialogModule,
-    HdWalletAdapterDirective,
-    HdWalletIconComponent,
-    HdWalletModalTriggerDirective,
-    HdSelectAndConnectWalletDirective,
-    HdWalletModalComponent,
-  ],
+  imports: [MatButton],
 })
 export class HdWalletModalButtonComponent {
+  private readonly _walletModalService = inject(HdWalletModalService);
+
   @ContentChild('children') children: ElementRef | null = null;
-  @Input() color: ButtonColor = 'primary';
+
+  readonly color = input<ButtonColor>('primary');
+
+  onOpen() {
+    this._walletModalService.open();
+  }
 }

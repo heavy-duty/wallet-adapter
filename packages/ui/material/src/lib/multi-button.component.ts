@@ -1,103 +1,86 @@
-import { ClipboardModule } from '@angular/cdk/clipboard';
-import { CdkMenuModule } from '@angular/cdk/menu';
-import { CommonModule } from '@angular/common';
+import { CdkCopyToClipboard } from '@angular/cdk/clipboard';
 import {
   ChangeDetectionStrategy,
   Component,
   ContentChild,
   ElementRef,
-  Input,
+  inject,
+  input,
 } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
+import { MatButton } from '@angular/material/button';
+import { MatDivider } from '@angular/material/divider';
+import { MatIcon } from '@angular/material/icon';
+import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
+import {
+  injectConnected,
+  injectPublicKey,
+  injectWallet,
+} from '@heavy-duty/wallet-adapter';
 import {
   HdDisconnectWalletDirective,
   HdObscureAddressPipe,
-  HdSelectAndConnectWalletDirective,
-  HdWalletAdapterDirective,
   HdWalletIconComponent,
 } from '@heavy-duty/wallet-adapter-cdk';
-import { HdWalletConnectButtonComponent } from './connect-button.component';
+import { HdConnectWalletButtonComponent } from './connect-button.component';
 import { HdWalletModalButtonComponent } from './modal-button.component';
-import {
-  HdWalletModalComponent,
-  HdWalletModalTriggerDirective,
-} from './modal.component';
+import { HdWalletModalService } from './modal.service';
 import { ButtonColor } from './types';
 
 @Component({
   selector: 'hd-wallet-multi-button',
   template: `
-    <ng-container
-      *hdWalletAdapter="
-        let wallet = wallet;
-        let wallets = wallets;
-        let publicKey = publicKey;
-        let connected = connected
-      "
-    >
-      <hd-wallet-modal-button
-        *ngIf="wallet === null"
-        [color]="color"
-      ></hd-wallet-modal-button>
-      <hd-wallet-connect-button
-        *ngIf="!connected && wallet"
-        [color]="color"
-      ></hd-wallet-connect-button>
-
-      <ng-container *ngIf="connected">
-        <button
-          [color]="color"
-          [matMenuTriggerFor]="walletMenu"
-          mat-raised-button
-        >
-          <ng-content></ng-content>
-          <div *ngIf="!children" class="button-content">
-            <hd-wallet-icon *ngIf="wallet" [hdWallet]="wallet"></hd-wallet-icon>
-            {{ publicKey?.toBase58() | hdObscureAddress }}
-          </div>
-        </button>
-        <mat-menu #walletMenu="matMenu">
-          <button
-            *ngIf="publicKey"
-            [cdkCopyToClipboard]="publicKey.toBase58()"
-            mat-menu-item
-          >
+    @if (!wallet()) {
+      <hd-wallet-modal-button [color]="color()"></hd-wallet-modal-button>
+    } @else if (!connected()) {
+      <hd-connect-wallet-button [color]="color()"></hd-connect-wallet-button>
+    } @else {
+      <button
+        [color]="color()"
+        [matMenuTriggerFor]="walletMenu"
+        mat-raised-button
+      >
+        <ng-content></ng-content>
+        @if (!children) {
+          <span class="button-content">
+            @if (wallet(); as wallet) {
+              <hd-wallet-icon [hdWallet]="wallet"></hd-wallet-icon>
+            }
+            @if (publicKey(); as publicKey) {
+              <span>
+                {{ publicKey.toBase58() | hdObscureAddress }}
+              </span>
+            }
+          </span>
+        }
+      </button>
+      <mat-menu #walletMenu="matMenu">
+        @if (publicKey(); as publicKey) {
+          <button [cdkCopyToClipboard]="publicKey.toBase58()" mat-menu-item>
             <mat-icon>content_copy</mat-icon>
             Copy address
           </button>
-          <button
-            #hdWalletModalTrigger="hdWalletModalTrigger"
-            #hdSelectAndConnectWallet="hdSelectAndConnectWallet"
-            (click)="hdWalletModalTrigger.open(wallets)"
-            (hdSelectWallet)="hdSelectAndConnectWallet.run($event)"
-            mat-menu-item
-            hdWalletModalTrigger
-            hdSelectAndConnectWallet
-            panelClass="mat-dialog"
-          >
-            <mat-icon>sync_alt</mat-icon>
-            Connect a different wallet
-          </button>
-          <mat-divider></mat-divider>
-          <button
-            #hdDisconnectWallet="hdDisconnectWallet"
-            (click)="hdDisconnectWallet.run()"
-            mat-menu-item
-            hdDisconnectWallet
-          >
-            <mat-icon>logout</mat-icon>
-            Disconnect
-          </button>
-        </mat-menu>
-      </ng-container>
-    </ng-container>
+        }
 
-    <ng-template #template>
-      <hd-wallet-modal></hd-wallet-modal>
-    </ng-template>
+        <button
+          (click)="onOpenWalletModal()"
+          mat-menu-item
+          panelClass="mat-dialog"
+        >
+          <mat-icon>sync_alt</mat-icon>
+          Connect a different wallet
+        </button>
+        <mat-divider></mat-divider>
+        <button
+          (click)="disconnectWallet.run()"
+          mat-menu-item
+          hdDisconnectWallet
+          #disconnectWallet="hdDisconnectWallet"
+        >
+          <mat-icon>logout</mat-icon>
+          Disconnect
+        </button>
+      </mat-menu>
+    }
   `,
   styles: [
     `
@@ -111,25 +94,29 @@ import { ButtonColor } from './types';
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
-    CommonModule,
-    ClipboardModule,
-    CdkMenuModule,
-    MatButtonModule,
-    MatDividerModule,
-    MatIconModule,
-    MatMenuModule,
-    HdWalletAdapterDirective,
+    CdkCopyToClipboard,
+    MatButton,
+    MatDivider,
+    MatIcon,
+    MatMenu,
+    MatMenuTrigger,
     HdWalletIconComponent,
-    HdWalletModalTriggerDirective,
-    HdDisconnectWalletDirective,
-    HdSelectAndConnectWalletDirective,
     HdObscureAddressPipe,
-    HdWalletModalComponent,
     HdWalletModalButtonComponent,
-    HdWalletConnectButtonComponent,
+    HdConnectWalletButtonComponent,
+    HdDisconnectWalletDirective,
   ],
 })
 export class HdWalletMultiButtonComponent {
+  private readonly _walletModalService = inject(HdWalletModalService);
+  readonly wallet = injectWallet();
+  readonly connected = injectConnected();
+
   @ContentChild('children') children: ElementRef | null = null;
-  @Input() color: ButtonColor = 'primary';
+  readonly color = input<ButtonColor>('primary');
+  readonly publicKey = injectPublicKey();
+
+  onOpenWalletModal() {
+    this._walletModalService.open();
+  }
 }

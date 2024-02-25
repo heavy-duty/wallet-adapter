@@ -1,41 +1,44 @@
-import { NgIf } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
   ContentChild,
   ElementRef,
-  Input,
+  input,
 } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { Wallet } from '@heavy-duty/wallet-adapter';
+import { MatButton } from '@angular/material/button';
 import {
   HdConnectWalletDirective,
-  HdWalletAdapterDirective,
   HdWalletIconComponent,
 } from '@heavy-duty/wallet-adapter-cdk';
 import { ButtonColor } from './types';
 
 @Component({
-  selector: 'hd-wallet-connect-button',
+  selector: 'hd-connect-wallet-button',
   template: `
     <button
-      #hdConnectWallet="hdConnectWallet"
-      *hdWalletAdapter="
-        let wallet = wallet;
-        let connecting = connecting;
-        let connected = connected
+      [color]="color()"
+      [disabled]="
+        connectWallet.connecting() ||
+        !connectWallet.wallet() ||
+        connectWallet.connected() ||
+        disabled()
       "
-      [color]="color"
-      [disabled]="connecting || !wallet || connected || disabled"
-      (click)="hdConnectWallet.run()"
-      hdConnectWallet
+      (click)="connectWallet.run()"
       mat-raised-button
+      hdConnectWallet
+      #connectWallet="hdConnectWallet"
     >
       <ng-content></ng-content>
-      <div *ngIf="!children" class="button-content">
-        <hd-wallet-icon *ngIf="wallet" [hdWallet]="wallet"></hd-wallet-icon>
-        {{ getMessage(connected, connecting, wallet) }}
-      </div>
+
+      @if (!children) {
+        <span class="button-content">
+          @if (connectWallet.wallet(); as wallet) {
+            <hd-wallet-icon [hdWallet]="wallet"></hd-wallet-icon>
+          }
+
+          {{ connectWallet.message() }}
+        </span>
+      }
     </button>
   `,
   styles: [
@@ -53,23 +56,11 @@ import { ButtonColor } from './types';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [
-    NgIf,
-    HdWalletAdapterDirective,
-    HdWalletIconComponent,
-    HdConnectWalletDirective,
-    MatButtonModule,
-  ],
+  imports: [HdWalletIconComponent, MatButton, HdConnectWalletDirective],
 })
-export class HdWalletConnectButtonComponent {
+export class HdConnectWalletButtonComponent {
   @ContentChild('children') children: ElementRef | null = null;
-  @Input() color: ButtonColor = 'primary';
-  @Input() disabled = false;
 
-  getMessage(connected: boolean, connecting: boolean, wallet: Wallet | null) {
-    if (connecting) return 'Connecting...';
-    if (connected) return 'Connected';
-    if (wallet) return 'Connect';
-    return 'Connect Wallet';
-  }
+  readonly color = input<ButtonColor>('primary');
+  readonly disabled = input(false);
 }

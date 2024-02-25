@@ -11,11 +11,11 @@ import { HdSelectWalletDirective } from './select-wallet.directive';
     { directive: HdSelectWalletDirective, outputs: ['hdWalletSelected'] },
     {
       directive: HdConnectWalletDirective,
-      outputs: [
+      /* outputs: [
         'hdWalletConnected',
         'hdConnectWalletStarts',
         'hdConnectWalletError',
-      ],
+      ], */
     },
   ],
 })
