@@ -1,8 +1,6 @@
 import { NgClass } from '@angular/common';
-import { Component, OnInit, computed, inject } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { Component, computed } from '@angular/core';
 import {
-  WalletStore,
   injectConnected,
   injectPublicKey,
   injectWallet,
@@ -49,6 +47,7 @@ import { HdWalletMultiButtonComponent } from '@heavy-duty/wallet-adapter-materia
           </span>
         </p>
       </section>
+
       <section>
         <hd-wallet-multi-button></hd-wallet-multi-button>
       </section>
@@ -56,21 +55,9 @@ import { HdWalletMultiButtonComponent } from '@heavy-duty/wallet-adapter-materia
   `,
   imports: [NgClass, HdObscureAddressPipe, HdWalletMultiButtonComponent],
 })
-export class AppComponent implements OnInit {
-  private readonly _walletStore = inject(WalletStore);
-  private readonly _matSnackBar = inject(MatSnackBar);
+export class AppComponent {
   readonly wallet = injectWallet();
   readonly connected = injectConnected();
   readonly publicKey = injectPublicKey();
   readonly walletName = computed(() => this.wallet()?.adapter.name ?? 'None');
-
-  ngOnInit() {
-    this._walletStore.error$.subscribe((error) => {
-      if (error) {
-        this._matSnackBar.open(error?.message ?? 'Error occurred', 'close', {
-          duration: 4000,
-        });
-      }
-    });
-  }
 }

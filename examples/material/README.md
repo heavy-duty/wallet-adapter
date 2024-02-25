@@ -8,10 +8,14 @@ By following this instructions you'll be able to set up the wallet-adapter into 
 
 ```
 "rxjs": "~7.8.0",
-"@angular/core": "^17.0.0",
-"@ngrx/component-store": "^17.0.1",
-"@solana/web3.js": "1.87.6",
-"@solana/wallet-adapter-base": "0.9.23",
+"@angular/core": "^17.1.0"
+"@angular/common": "^17.1.0"
+"@angular/cdk": "^17.1.0"
+"@angular/material": "^17.1.0"
+"@ngrx/component-store": "^17.0.0"
+"@solana/wallet-adapter-base": "^0.9.23"
+"@heavy-duty/wallet-adapter": "0.8.4"
+"@heavy-duty/wallet-adapter-cdk": "0.8.4"
 ```
 
 ## Installation
@@ -68,110 +72,180 @@ Now we have to add some wallet interactions, it would look something like this:
 This will result in something like:
 
 ```ts
-import { AsyncPipe, NgIf } from '@angular/common';
-import { Component, inject } from '@angular/core';
-import { provideWalletAdapter, WalletStore } from '@heavy-duty/wallet-adapter';
+import { NgClass } from '@angular/common';
+import { Component, computed } from '@angular/core';
 import {
-  HdWalletAdapterDirective,
-  HdObscureAddressPipe,
-} from '@heavy-duty/wallet-adapter/cdk';
+  injectConnected,
+  injectPublicKey,
+  injectWallet,
+} from '@heavy-duty/wallet-adapter';
+import { HdObscureAddressPipe } from '@heavy-duty/wallet-adapter-cdk';
 
 @Component({
   standalone: true,
   selector: 'hd-root',
   template: `
-    <main
-      *hdWalletAdapter="
-        let wallet = wallet;
-        let connected = connected;
-        let publicKey = publicKey;
-        let wallets = wallets
-      "
-    >
-      <header>
-        <h1>Wallet Adapter Example (CDK)</h1>
-      </header>
+    <header>
+      <h1>Wallet Adapter Example (Material)</h1>
+    </header>
 
+    <main>
       <section>
-        <div>
-          <p>
-            Wallet:
-            {{ wallet !== null ? wallet.adapter.name : 'None' }}
-          </p>
+        <p>
+          Wallet:
+          {{ walletName() }}
+        </p>
 
-          <p *ngIf="publicKey">
-            Public Key: {{ publicKey.toBase58() | hdObscureAddress }}
-          </p>
+        <p>
+          Public Key:
 
-          <p>Status: {{ connected ? 'connected' : 'disconnected' }}</p>
-        </div>
+          @if (publicKey(); as publicKey) {
+            <span>
+              {{ publicKey.toBase58() | hdObscureAddress }}
+            </span>
+          } @else {
+            <span> None </span>
+          }
+        </p>
+
+        <p>
+          Status:
+          <span
+            [ngClass]="{
+              'text-red-600': !connected(),
+              'text-green-600': connected()
+            }"
+          >
+            {{ connected() ? 'Connected' : 'Disconnected' }}
+          </span>
+        </p>
       </section>
     </main>
   `,
-  imports: [NgIf, HdWalletAdapterDirective, HdObscureAddressPipe],
+  imports: [NgClass, HdObscureAddressPipe],
 })
-export class AppComponent {}
+export class AppComponent {
+  readonly wallet = injectWallet();
+  readonly connected = injectConnected();
+  readonly publicKey = injectPublicKey();
+  readonly walletName = computed(() => this.wallet()?.adapter.name ?? 'None');
+}
 ```
 
 ### Multi Button integration
 
-At this moment there's no way for the user to select a wallet in our example. We have to give users a way to see the available wallets, then choose one and use that to connect. Step by step it looks like this:
+At this moment there's no way for the user to select a wallet in our example. We have to give users a way to see the available wallets, then choose one and use that to connect. First we add the wallet-adapter material providers:
+
+For module-based applications:
+
+```ts
+@NgModule({
+  declarations: [
+    ...
+  ],
+  imports: [
+    ...,
+    HdWalletAdapterMaterialModule
+  ],
+  providers: [
+  	...
+  ],
+  bootstrap: [
+  	...
+  ]
+}) export class AppModule {}
+```
+
+For standalone applications:
+
+```ts
+import { ApplicationConfig, importProvidersFrom } from '@angular/core';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { provideWalletAdapter } from '@heavy-duty/wallet-adapter';
+import { HdWalletAdapterMaterialModule } from '@heavy-duty/wallet-adapter-material';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    importProvidersFrom([
+      BrowserAnimationsModule,
+      HdWalletAdapterMaterialModule,
+    ]),
+    provideWalletAdapter(),
+  ],
+};
+```
+
+Now we have to use the multi-button component following these steps:
 
 - Import multi button from the material library.
+- Add the multi button to the template.
 
 A simplified version of this would end up like this:
 
 ```ts
-import { NgIf } from '@angular/common';
-import { Component } from '@angular/core';
+import { NgClass } from '@angular/common';
+import { Component, computed } from '@angular/core';
 import {
-  HdObscureAddressPipe,
-  HdWalletAdapterDirective,
-} from '@heavy-duty/wallet-adapter-cdk';
+  injectConnected,
+  injectPublicKey,
+  injectWallet,
+} from '@heavy-duty/wallet-adapter';
+import { HdObscureAddressPipe } from '@heavy-duty/wallet-adapter-cdk';
 import { HdWalletMultiButtonComponent } from '@heavy-duty/wallet-adapter-material';
 
 @Component({
   standalone: true,
   selector: 'hd-root',
   template: `
-    <main
-      *hdWalletAdapter="
-        let wallet = wallet;
-        let connected = connected;
-        let publicKey = publicKey;
-        let wallets = wallets
-      "
-    >
-      <header>
-        <h1>Wallet Adapter Example (CDK)</h1>
-      </header>
+    <header>
+      <h1>Wallet Adapter Example (Material)</h1>
+    </header>
+
+    <main>
+      <section>
+        <p>
+          Wallet:
+          {{ walletName() }}
+        </p>
+
+        <p>
+          Public Key:
+
+          @if (publicKey(); as publicKey) {
+            <span>
+              {{ publicKey.toBase58() | hdObscureAddress }}
+            </span>
+          } @else {
+            <span> None </span>
+          }
+        </p>
+
+        <p>
+          Status:
+          <span
+            [ngClass]="{
+              'text-red-600': !connected(),
+              'text-green-600': connected()
+            }"
+          >
+            {{ connected() ? 'Connected' : 'Disconnected' }}
+          </span>
+        </p>
+      </section>
 
       <section>
-        <div>
-          <p>
-            Wallet:
-            {{ wallet !== null ? wallet.adapter.name : 'None' }}
-          </p>
-
-          <p *ngIf="publicKey">
-            Public Key: {{ publicKey.toBase58() | hdObscureAddress }}
-          </p>
-
-          <p>Status: {{ connected ? 'connected' : 'disconnected' }}</p>
-        </div>
-
         <hd-wallet-multi-button></hd-wallet-multi-button>
       </section>
     </main>
   `,
-  imports: [
-    NgIf,
-    HdWalletAdapterDirective,
-    HdObscureAddressPipe,
-    HdWalletMultiButtonComponent,
-  ],
+  imports: [NgClass, HdObscureAddressPipe, HdWalletMultiButtonComponent],
 })
-export class AppComponent {}
+export class AppComponent {
+  readonly wallet = injectWallet();
+  readonly connected = injectConnected();
+  readonly publicKey = injectPublicKey();
+  readonly walletName = computed(() => this.wallet()?.adapter.name ?? 'None');
+}
 ```
 
-You can [access the final code](/packages/material-example/) if you'd rather copy the application.
+You can [access the final code](/examples/material/) if you'd rather copy the application.
