@@ -1,175 +1,143 @@
-import { NgClass, NgFor, NgIf } from '@angular/common';
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Dialog } from '@angular/cdk/dialog';
+import { NgClass } from '@angular/common';
+import { Component, computed, inject } from '@angular/core';
 import {
+  WalletStore,
+  injectConnected,
+  injectPublicKey,
+  injectWallet,
+} from '@heavy-duty/wallet-adapter';
+import {
+  HdConnectWalletDirective,
   HdDisconnectWalletDirective,
-  HdEncodeTextPipe,
   HdObscureAddressPipe,
-  HdSelectAndConnectWalletDirective,
-  HdSignMessageDirective,
-  HdWalletAdapterDirective,
   HdWalletIconComponent,
 } from '@heavy-duty/wallet-adapter-cdk';
+import { WalletName } from '@solana/wallet-adapter-base';
+import { EMPTY, concatMap } from 'rxjs';
+import { WalletsModalComponent } from './wallets-modal.component';
 
 @Component({
   standalone: true,
   selector: 'hd-root',
   template: `
-    <main
-      *hdWalletAdapter="
-        let wallet = wallet;
-        let connected = connected;
-        let publicKey = publicKey;
-        let wallets = wallets
-      "
-      class="max-w-[36rem] mx-auto my-16 border-2 border-black p-4"
-    >
-      <header>
-        <h1 class="text-2xl text-center">Wallet Adapter Example (CDK)</h1>
-      </header>
+    <header class="p-8">
+      <h1 class="text-2xl text-center">Wallet Adapter Example (CDK)</h1>
+    </header>
 
+    <main class="max-w-[36rem] mx-auto border-2 border-black p-4">
       <section>
-        <div class="my-4">
-          <p>
-            Wallet:
-            {{ wallet !== null ? wallet.adapter.name : 'None' }}
-          </p>
+        <p>
+          Wallet:
+          {{ walletName() }}
+        </p>
 
-          <p>
-            Public Key:
-            <span *ngIf="publicKey !== null; else noWalletConnected">
+        <p>
+          Public Key:
+
+          @if (publicKey(); as publicKey) {
+            <span>
               {{ publicKey.toBase58() | hdObscureAddress }}
             </span>
-            <ng-template #noWalletConnected> None </ng-template>
-          </p>
+          } @else {
+            <span> None </span>
+          }
+        </p>
 
-          <p>
-            Status:
-            <span
-              [ngClass]="{
-                'text-red-600': !connected,
-                'text-green-600': connected
-              }"
-            >
-              {{ connected ? 'Connected' : 'Disconnected' }}
-            </span>
-          </p>
-
-          <div *ngIf="publicKey !== null">
-            <p>Sign a Message</p>
-            <form
-              #hdSignMessage="hdSignMessage"
-              *ngIf="message | hdEncodeText as encodedMessage"
-              (ngSubmit)="hdSignMessage.run(encodedMessage)"
-              (hdSignMessageStarts)="onSignMessageStarts()"
-              (hdSignMessageError)="onSignMessageError($event)"
-              (hdMessageSigned)="onMessageSigned($event)"
-              hdSignMessage
-            >
-              <label class="mr-2" for="message-form-content">Message: </label>
-              <input
-                id="message-form-content"
-                class="px-2 py-1 border-2 border-black rounded-md mr-2"
-                [(ngModel)]="message"
-                type="text"
-                name="content"
-              />
-              <button
-                class="px-4 py-2 bg-violet-800 text-white rounded-md disabled:cursor-not-allowed"
-                type="submit"
-              >
-                Sign
-              </button>
-            </form>
-          </div>
-        </div>
-
-        <div class="flex gap-4">
-          <button
-            #hdSelectAndConnectWallet="hdSelectAndConnectWallet"
-            *ngFor="let wallet of wallets; let i = index"
-            class="flex justify-center items-center gap-2 px-4 py-2 bg-violet-800 text-white rounded-md disabled:cursor-not-allowed"
-            [disabled]="connected || wallet === null"
-            (click)="hdSelectAndConnectWallet.run(wallet.adapter.name)"
-            (hdConnectWalletStarts)="onConnectWalletStarts()"
-            (hdConnectWalletError)="onConnectWalletError($event)"
-            (hdWalletConnected)="onWalletConnected()"
-            hdSelectAndConnectWallet
+        <p>
+          Status:
+          <span
+            [ngClass]="{
+              'text-red-600': !connected(),
+              'text-green-600': connected()
+            }"
           >
-            <span> Connect </span>
+            {{ connected() ? 'Connected' : 'Disconnected' }}
+          </span>
+        </p>
+      </section>
 
-            <hd-wallet-icon [hdWallet]="wallet"></hd-wallet-icon>
-          </button>
-
+      <section>
+        @if (connected()) {
           <button
-            #hdDisconnectWallet="hdDisconnectWallet"
-            *ngIf="wallet"
-            class="flex justify-center items-center gap-2 px-4 py-2 bg-red-400 rounded-md disabled:cursor-not-allowed"
-            [disabled]="!connected"
-            (click)="hdDisconnectWallet.run()"
-            (hdDisconnectWalletStarts)="onDisconnectWalletStarts()"
-            (hdDisconnectWalletError)="onDisconnectWalletError($event)"
-            (hdWalletDisconnected)="onWalletDisconnected()"
+            [disabled]="
+              disconnectWallet.disconnecting() || !disconnectWallet.wallet()
+            "
+            (click)="disconnectWallet.run()"
             hdDisconnectWallet
+            #disconnectWallet="hdDisconnectWallet"
+            class="flex justify-center items-center gap-2 px-4 py-2 bg-red-400 rounded-md disabled:cursor-not-allowed"
           >
             <span> Disconnect </span>
 
-            <hd-wallet-icon [hdWallet]="wallet"></hd-wallet-icon>
+            @if (wallet(); as wallet) {
+              <hd-wallet-icon [hdWallet]="wallet"></hd-wallet-icon>
+            }
           </button>
-        </div>
+        } @else if (wallet()) {
+          <button
+            [disabled]="
+              connectWallet.connecting() ||
+              !connectWallet.wallet() ||
+              connectWallet.connected()
+            "
+            (click)="connectWallet.run()"
+            hdConnectWallet
+            #connectWallet="hdConnectWallet"
+            class="flex gap-2 items-center px-4 py-2 bg-blue-500 rounded-md disabled:cursor-not-allowed"
+          >
+            <span> Connect </span>
+
+            @if (wallet(); as wallet) {
+              <hd-wallet-icon [hdWallet]="wallet"></hd-wallet-icon>
+            }
+          </button>
+        } @else {
+          <button
+            class="flex gap-2 items-center px-4 py-2 bg-blue-500 rounded-md disabled:cursor-not-allowed"
+            (click)="onSelectWallet()"
+          >
+            Select wallet
+          </button>
+        }
       </section>
     </main>
   `,
   imports: [
-    NgIf,
-    NgFor,
     NgClass,
-    FormsModule,
-    HdSelectAndConnectWalletDirective,
     HdDisconnectWalletDirective,
-    HdWalletAdapterDirective,
+    HdConnectWalletDirective,
+    HdWalletIconComponent,
     HdObscureAddressPipe,
     HdWalletIconComponent,
-    HdSignMessageDirective,
-    HdEncodeTextPipe,
   ],
 })
 export class AppComponent {
-  message = '';
+  private readonly _dialog = inject(Dialog);
+  private readonly _walletStore = inject(WalletStore);
 
-  onWalletConnected() {
-    console.log('Wallet connected');
-  }
+  readonly wallet = injectWallet();
+  readonly connected = injectConnected();
+  readonly publicKey = injectPublicKey();
 
-  onConnectWalletStarts() {
-    console.log('Starting to connect wallet');
-  }
+  readonly walletName = computed(() => this.wallet()?.adapter.name ?? 'None');
 
-  onConnectWalletError(error: unknown) {
-    console.error(error);
-  }
+  onSelectWallet() {
+    this._dialog
+      .open<WalletName | undefined, unknown, WalletsModalComponent>(
+        WalletsModalComponent
+      )
+      .closed.pipe(
+        concatMap((walletName) => {
+          if (!walletName) {
+            return EMPTY;
+          }
 
-  onWalletDisconnected() {
-    console.log('Wallet disconnected');
-  }
+          this._walletStore.selectWallet(walletName);
 
-  onDisconnectWalletStarts() {
-    console.log('Starting to disconnect wallet');
-  }
-
-  onDisconnectWalletError(error: unknown) {
-    console.error(error);
-  }
-
-  onMessageSigned(signature: Uint8Array) {
-    console.log('Message signed', Buffer.from(signature).toString('base64'));
-  }
-
-  onSignMessageStarts() {
-    console.log('Starting to sign message');
-  }
-
-  onSignMessageError(error: unknown) {
-    console.error(error);
+          return this._walletStore.connect();
+        })
+      )
+      .subscribe();
   }
 }
