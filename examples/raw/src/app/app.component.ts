@@ -1,7 +1,12 @@
-import { AsyncPipe, NgFor, NgIf } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, OnInit, computed, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { WalletStore } from '@heavy-duty/wallet-adapter';
+import {
+  WalletStore,
+  injectConnected,
+  injectPublicKey,
+  injectWallet,
+  injectWallets,
+} from '@heavy-duty/wallet-adapter';
 import { WalletName } from '@solana/wallet-adapter-base';
 
 @Component({
@@ -17,21 +22,15 @@ import { WalletName } from '@solana/wallet-adapter-base';
         <div>
           <p>
             Wallet:
-            <ng-container *ngIf="wallet$ | async as wallet; else noneWallet">
-              {{ wallet.adapter.name }}
-            </ng-container>
-            <ng-template #noneWallet> None </ng-template>
+
+            {{ walletName() }}
           </p>
 
-          <p *ngIf="publicKey$ | async as publicKey">
-            Public Key: {{ publicKey.toBase58() }}
-          </p>
+          <p>Status: {{ connected() ? 'connected' : 'disconnected' }}</p>
 
-          <p>
-            Status: {{ (connected$ | async) ? 'connected' : 'disconnected' }}
-          </p>
+          @if (publicKey(); as publicKey) {
+            <p>Public Key: {{ publicKey.toBase58() }}</p>
 
-          <div *ngIf="publicKey$ | async as publicKey">
             <label class="mr-2" for="message-form-content"
               >Sign Message:
             </label>
@@ -49,7 +48,7 @@ import { WalletName } from '@solana/wallet-adapter-base';
             >
               Sign
             </button>
-          </div>
+          }
         </div>
 
         <fieldset>
@@ -66,41 +65,41 @@ import { WalletName } from '@solana/wallet-adapter-base';
             <label for="select-wallet-empty">None</label>
           </div>
 
-          <div *ngFor="let wallet of wallets$ | async; let i = index">
-            <input
-              [id]="'select-wallet-' + i"
-              [formControl]="selectWalletControl"
-              [value]="wallet.adapter.name"
-              type="radio"
-              name="walletName"
-            />
-            <label [for]="'select-wallet-' + i">
-              {{ wallet.adapter.name }}
-            </label>
-          </div>
+          @for (wallet of wallets(); track wallet.adapter.name) {
+            <div>
+              <input
+                [id]="'select-wallet-' + wallet.adapter.name"
+                [formControl]="selectWalletControl"
+                [value]="wallet.adapter.name"
+                type="radio"
+                name="walletName"
+              />
+              <label [for]="'select-wallet-' + wallet.adapter.name">
+                {{ wallet.adapter.name }}
+              </label>
+            </div>
+          }
         </fieldset>
 
-        <button
-          [disabled]="(connected$ | async) || (wallet$ | async) === null"
-          (click)="onConnect()"
-        >
+        <button [disabled]="connected() || !wallet()" (click)="onConnect()">
           Connect
         </button>
-        <button
-          [disabled]="(connected$ | async) === false"
-          (click)="onDisconnect()"
-        >
+        <button [disabled]="!connected()" (click)="onDisconnect()">
           Disconnect
         </button>
       </section>
     </main>
   `,
-  imports: [NgIf, NgFor, AsyncPipe, ReactiveFormsModule],
+  imports: [ReactiveFormsModule],
 })
 export class AppComponent implements OnInit {
   private readonly _walletStore = inject(WalletStore);
   private readonly _formBuilder = inject(FormBuilder);
-
+  readonly wallet = injectWallet();
+  readonly connected = injectConnected();
+  readonly publicKey = injectPublicKey();
+  readonly wallets = injectWallets();
+  readonly walletName = computed(() => this.wallet()?.adapter.name ?? 'None');
   readonly selectWalletControl = this._formBuilder.control<WalletName | null>(
     null,
     [Validators.required]
@@ -108,11 +107,6 @@ export class AppComponent implements OnInit {
   readonly messageControl = this._formBuilder.control<string>('', {
     nonNullable: true,
   });
-
-  readonly connected$ = this._walletStore.connected$;
-  readonly publicKey$ = this._walletStore.publicKey$;
-  readonly wallets$ = this._walletStore.wallets$;
-  readonly wallet$ = this._walletStore.wallet$;
 
   ngOnInit() {
     this._walletStore.wallet$.subscribe((wallet) =>
