@@ -14,8 +14,8 @@ import { ButtonColor } from './types';
   selector: 'hd-wallet-modal-button',
   template: `
     <button
-      [color]="color()"
-      [disabled]="disabled()"
+      [color]="hdColor()"
+      [disabled]="hdDisabled()"
       (click)="onOpen()"
       mat-raised-button
     >
@@ -48,8 +48,8 @@ export class HdWalletModalButtonComponent {
 
   @ContentChild('children') children: ElementRef | null = null;
 
-  readonly color = input<ButtonColor>('primary');
-  readonly disabled = input(false);
+  readonly hdColor = input<ButtonColor>('primary');
+  readonly hdDisabled = input(false);
 
   onOpen() {
     this._walletModalService.open();

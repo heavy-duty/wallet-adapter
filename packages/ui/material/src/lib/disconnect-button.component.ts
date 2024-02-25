@@ -3,7 +3,6 @@ import {
   Component,
   ContentChild,
   ElementRef,
-  inject,
   input,
 } from '@angular/core';
 import { MatButton } from '@angular/material/button';
@@ -17,24 +16,26 @@ import { ButtonColor } from './types';
   selector: 'hd-disconnect-wallet-button',
   template: `
     <button
-      [color]="color()"
+      [color]="hdColor()"
       [disabled]="
-        hdDisconnectWalletDirective.disconnecting() ||
-        !hdDisconnectWalletDirective.wallet() ||
-        disabled()
+        disconnectWallet.disconnecting() ||
+        !disconnectWallet.wallet() ||
+        hdDisabled()
       "
-      (click)="hdDisconnectWalletDirective.run()"
+      (click)="disconnectWallet.run()"
       mat-raised-button
+      hdDisconnectWallet
+      #disconnectWallet="hdDisconnectWallet"
     >
       <ng-content></ng-content>
 
       @if (!children) {
         <span class="button-content">
-          @if (hdDisconnectWalletDirective.wallet(); as wallet) {
+          @if (disconnectWallet.wallet(); as wallet) {
             <hd-wallet-icon *ngIf="wallet" [hdWallet]="wallet"></hd-wallet-icon>
           }
 
-          {{ hdDisconnectWalletDirective.message() }}
+          {{ disconnectWallet.message() }}
         </span>
       }
     </button>
@@ -51,12 +52,9 @@ import { ButtonColor } from './types';
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [MatButton, HdWalletIconComponent, HdDisconnectWalletDirective],
-  hostDirectives: [HdDisconnectWalletDirective],
 })
 export class HdDisconnectWalletButtonComponent {
-  readonly hdDisconnectWalletDirective = inject(HdDisconnectWalletDirective);
-
   @ContentChild('children') children: ElementRef | null = null;
-  readonly color = input<ButtonColor>('primary');
-  readonly disabled = input(false);
+  readonly hdColor = input<ButtonColor>('primary');
+  readonly hdDisabled = input(false);
 }

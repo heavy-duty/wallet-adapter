@@ -31,10 +31,10 @@ import { ButtonColor } from './types';
   template: `
     @if (connected()) {
       <button
-        [color]="color()"
+        [color]="hdColor()"
         [matMenuTriggerFor]="walletMenu"
         mat-raised-button
-        [disabled]="disabled()"
+        [disabled]="hdDisabled()"
       >
         <ng-content></ng-content>
         @if (!children) {
@@ -79,13 +79,13 @@ import { ButtonColor } from './types';
       </mat-menu>
     } @else if (wallet()) {
       <hd-connect-wallet-button
-        [color]="color()"
-        [disabled]="disabled()"
+        [hdColor]="hdColor()"
+        [hdDisabled]="hdDisabled()"
       ></hd-connect-wallet-button>
     } @else {
       <hd-wallet-modal-button
-        [color]="color()"
-        [disabled]="disabled()"
+        [hdColor]="hdColor()"
+        [hdDisabled]="hdDisabled()"
       ></hd-wallet-modal-button>
     }
   `,
@@ -122,8 +122,8 @@ export class HdWalletMultiButtonComponent {
   readonly publicKey = injectPublicKey();
 
   @ContentChild('children') children: ElementRef | null = null;
-  readonly color = input<ButtonColor>('primary');
-  readonly disabled = input(false);
+  readonly hdColor = input<ButtonColor>('primary');
+  readonly hdDisabled = input(false);
 
   onOpenWalletModal() {
     this._walletModalService.open();
