@@ -1,10 +1,10 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { Wallet } from '@heavy-duty/wallet-adapter';
 import { HdSanitizeUrlPipe } from './internals';
 
 @Component({
   selector: 'hd-wallet-icon',
-  template: ` <img [src]="hdWallet.adapter.icon | hdSanitizeUrl" alt="" /> `,
+  template: ` <img [src]="hdWallet().adapter.icon | hdSanitizeUrl" alt="" /> `,
   styles: [
     `
       :host {
@@ -22,5 +22,5 @@ import { HdSanitizeUrlPipe } from './internals';
   imports: [HdSanitizeUrlPipe],
 })
 export class HdWalletIconComponent {
-  @Input() hdWallet!: Wallet;
+  readonly hdWallet = input.required<Wallet>();
 }
